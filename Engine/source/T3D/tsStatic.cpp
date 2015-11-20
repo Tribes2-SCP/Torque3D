@@ -55,7 +55,23 @@ using namespace Torque;
 extern bool gEditingMission;
 
 IMPLEMENT_CO_NETOBJECT_V1(TSStatic);
-
+ResourceBase getTSStaticShapeResource(const char * path) 
+{
+    char newName[512]="";
+    strcat(newName,"compat/base/shapes/");
+    strncat(newName,path,500);
+    Resource<TSShape> shape=NULL;
+    shape = ResourceManager::get().load(newName);
+    if (shape) {
+        return shape;
+    } else {
+        shape = ResourceManager::get().load(path);
+        if (shape) {
+            return shape;
+        }
+    }
+    return NULL;
+}
 ConsoleDocClass( TSStatic,
    "@brief A static object derived from a 3D model file and placed within the game world.\n\n"
 
@@ -322,7 +338,7 @@ bool TSStatic::_createShape()
 
    mShapeHash = _StringTable::hashString(mShapeName);
 
-   mShape = ResourceManager::get().load(mShapeName);
+   mShape = getTSStaticShapeResource(mShapeName);
    if ( bool(mShape) == false )
    {
       Con::errorf( "TSStatic::_createShape() - Unable to load shape: %s", mShapeName );

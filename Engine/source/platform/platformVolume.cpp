@@ -62,7 +62,7 @@ bool MountZips(const String &root)
    basePath.setRoot(root);
    Vector<String> outList;
 
-   S32 num = FindByPattern(basePath, "*.zip", true, outList);
+   S32 num = FindByPattern(basePath, "*.vl2", true, outList);
    if(num == 0)
       return true; // not an error
 

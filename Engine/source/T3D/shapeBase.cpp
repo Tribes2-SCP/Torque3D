@@ -22,7 +22,6 @@
 
 #include "platform/platform.h"
 #include "T3D/shapeBase.h"
-
 #include "core/dnet.h"
 #include "sfx/sfxSystem.h"
 #include "sfx/sfxSource.h"
@@ -64,7 +63,23 @@
 #include "core/stream/fileStream.h"
 
 IMPLEMENT_CO_DATABLOCK_V1(ShapeBaseData);
-
+ResourceBase getShapeResource(const char * path) 
+{
+    char newName[512]="";
+    strcat(newName,"compat/base/shapes/");
+    strncat(newName,path,500);
+    Resource<TSShape> shape=NULL;
+    shape = ResourceManager::get().load(newName);
+    if (shape) {
+        return shape;
+    } else {
+        shape = ResourceManager::get().load(path);
+        if (shape) {
+            return shape;
+        }
+    }
+    return NULL;
+}
 ConsoleDocClass( ShapeBaseData,
    "@brief Defines properties for a ShapeBase object.\n\n"
    "@see ShapeBase\n"
@@ -268,7 +283,7 @@ bool ShapeBaseData::preload(bool server, String &errorStr)
 
       if( debrisShapeName && debrisShapeName[0] != '\0' && !bool(debrisShape) )
       {
-         debrisShape = ResourceManager::get().load(debrisShapeName);
+         debrisShape = getShapeResource(debrisShapeName);
          if( bool(debrisShape) == false )
          {
             errorStr = String::ToString("ShapeBaseData::load: Couldn't load shape \"%s\"", debrisShapeName);
@@ -290,7 +305,8 @@ bool ShapeBaseData::preload(bool server, String &errorStr)
       S32 i;
 
       // Resolve shapename
-      mShape = ResourceManager::get().load(shapeName);
+
+      mShape = getShapeResource(shapeName);
       if (bool(mShape) == false)
       {
          errorStr = String::ToString("ShapeBaseData: Couldn't load shape \"%s\"",shapeName);
@@ -4970,5 +4986,5 @@ DefineEngineMethod( ShapeBase, getModelFile, const char *, (),,
 		return String::EmptyString;
 
 	const char *fieldName = StringTable->insert( String("shapeFile") );
-   return datablock->getDataField( fieldName, NULL );
+    return datablock->getDataField( fieldName, NULL );
 }
