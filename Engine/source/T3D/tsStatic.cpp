@@ -50,6 +50,29 @@
 #include "console/engineAPI.h"
 #include "T3D/accumulationVolume.h"
 
+ResourceBase getTSStaticShapeResource(const char * path) 
+{
+	for (int i=0; i<SEARCH_PATH_SIZE; i++) {
+		if (searchPath[i]==NULL) 
+			break;
+		char newName[1024]="";
+		strncat(newName,searchPath[i],500);
+		strcat(newName,"shapes/");
+		strncat(newName,path,500);
+		Resource<TSShape> shape=NULL;
+		shape = ResourceManager::get().load(newName);
+		if (shape) {
+			return shape;
+		} else {
+			shape = ResourceManager::get().load(path);
+			if (shape) {
+				return shape;
+			}
+		}
+	}
+    return NULL;
+}
+
 using namespace Torque;
 
 extern bool gEditingMission;
@@ -322,7 +345,7 @@ bool TSStatic::_createShape()
 
    mShapeHash = _StringTable::hashString(mShapeName);
 
-   mShape = ResourceManager::get().load(mShapeName);
+   mShape = getTSStaticShapeResource(mShapeName);
    if ( bool(mShape) == false )
    {
       Con::errorf( "TSStatic::_createShape() - Unable to load shape: %s", mShapeName );

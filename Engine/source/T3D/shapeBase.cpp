@@ -63,6 +63,29 @@
 #include "renderInstance/renderOcclusionMgr.h"
 #include "core/stream/fileStream.h"
 
+ResourceBase getShapeResource(const char * path) 
+{
+	for (int i=0; i<SEARCH_PATH_SIZE; i++) {
+		if (searchPath[i]==NULL) 
+			break;
+		char newName[1024]="";
+		strncat(newName,searchPath[i],500);
+		strcat(newName,"shapes/");
+		strncat(newName,path,500);
+		Resource<TSShape> shape=NULL;
+		shape = ResourceManager::get().load(newName);
+		if (shape) {
+			return shape;
+		} else {
+			shape = ResourceManager::get().load(path);
+			if (shape) {
+				return shape;
+			}
+		}
+	}
+    return NULL;
+}
+
 IMPLEMENT_CO_DATABLOCK_V1(ShapeBaseData);
 
 ConsoleDocClass( ShapeBaseData,
@@ -268,7 +291,7 @@ bool ShapeBaseData::preload(bool server, String &errorStr)
 
       if( debrisShapeName && debrisShapeName[0] != '\0' && !bool(debrisShape) )
       {
-         debrisShape = ResourceManager::get().load(debrisShapeName);
+         debrisShape = getShapeResource(debrisShapeName);
          if( bool(debrisShape) == false )
          {
             errorStr = String::ToString("ShapeBaseData::load: Couldn't load shape \"%s\"", debrisShapeName);
@@ -290,7 +313,7 @@ bool ShapeBaseData::preload(bool server, String &errorStr)
       S32 i;
 
       // Resolve shapename
-      mShape = ResourceManager::get().load(shapeName);
+      mShape = getShapeResource(shapeName);
       if (bool(mShape) == false)
       {
          errorStr = String::ToString("ShapeBaseData: Couldn't load shape \"%s\"",shapeName);

@@ -269,7 +269,12 @@ void StandardMainLoop::init()
    Zip::ZipArchive *vfs = openEmbeddedVFSArchive();
    gResourceManager->addVFSRoot(vfs);
 #endif
-
+   for (int i=0; i < SEARCH_PATH_SIZE; i++) {
+		
+		char newvarname[50]="";
+		sprintf (newvarname,"searchPath%d",i);
+		Con::addVariable(newvarname, TypeCaseString, searchPath[i], "Search Path Variable\n");
+   }
    Con::addVariable("timeScale", TypeF32, &ATTS(gTimeScale), "Animation time scale.\n"
 	   "@ingroup platform");
    Con::addVariable("timeAdvance", TypeS32, &ATTS(gTimeAdvance), "The speed at which system processing time advances.\n"
