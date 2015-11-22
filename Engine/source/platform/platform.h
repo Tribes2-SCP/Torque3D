@@ -49,7 +49,7 @@
 
 #include <new>
 #include <typeinfo>
-
+extern char searchPath[20][1024];
 /// Global processor identifiers.
 ///
 /// @note These enums must be globally scoped so that they work with the inline assembly

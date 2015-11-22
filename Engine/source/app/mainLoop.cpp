@@ -76,7 +76,7 @@
 DITTS( F32, gTimeScale, 1.0 );
 DITTS( U32, gTimeAdvance, 0 );
 DITTS( U32, gFrameSkip, 0 );
-
+char searchPath[20][1024]={"","compat/base/","compat/base/shapes/","compat/base/interiors/",NULL};
 extern S32 sgBackgroundProcessSleepTime;
 extern S32 sgTimeManagerProcessInterval;
 
@@ -277,7 +277,12 @@ void StandardMainLoop::init()
    Zip::ZipArchive *vfs = openEmbeddedVFSArchive();
    gResourceManager->addVFSRoot(vfs);
 #endif
-
+   for (int i=0; i < 20; i++) {
+		
+		char newvarname[50]="";
+		sprintf (newvarname,"searchPath%d",i);
+		Con::addVariable(newvarname, TypeCaseString, searchPath[i], "Search Path Variable\n");
+   }
    Con::addVariable("timeScale", TypeF32, &ATTS(gTimeScale), "Animation time scale.\n"
 	   "@ingroup platform");
    Con::addVariable("timeAdvance", TypeS32, &ATTS(gTimeAdvance), "The speed at which system processing time advances.\n"

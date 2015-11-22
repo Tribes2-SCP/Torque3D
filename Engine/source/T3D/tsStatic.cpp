@@ -57,19 +57,24 @@ extern bool gEditingMission;
 IMPLEMENT_CO_NETOBJECT_V1(TSStatic);
 ResourceBase getTSStaticShapeResource(const char * path) 
 {
-    char newName[512]="";
-    strcat(newName,"compat/base/shapes/");
-    strncat(newName,path,500);
-    Resource<TSShape> shape=NULL;
-    shape = ResourceManager::get().load(newName);
-    if (shape) {
-        return shape;
-    } else {
-        shape = ResourceManager::get().load(path);
-        if (shape) {
-            return shape;
-        }
-    }
+	for (int i=0; i<20; i++) {
+		if (searchPath[i]==NULL) 
+			break;
+		char newName[1024]="";
+		strncat(newName,searchPath[i],500);
+		strcat(newName,"shapes/");
+		strncat(newName,path,500);
+		Resource<TSShape> shape=NULL;
+		shape = ResourceManager::get().load(newName);
+		if (shape) {
+			return shape;
+		} else {
+			shape = ResourceManager::get().load(path);
+			if (shape) {
+				return shape;
+			}
+		}
+	}
     return NULL;
 }
 ConsoleDocClass( TSStatic,
