@@ -696,10 +696,32 @@ bool MountSystem::getFileAttributes(const Path& path,FileNode::Attributes* attr)
 
 FileNodeRef MountSystem::getFileNode(const Path& path)
 {
+   Torque::FS::FileNodeRef ref;
+   for (int i=0; i<SEARCH_PATH_SIZE; i++){
+       char newpathca[1024]="";
+       if (strcmp(searchPath[i],"")==0)
+           break;
+       strncat(newpathca,searchPath[i],200);
+       strncat(newpathca,path.getPath(),200);
+       String newpathstr(newpathca);
+       Path newpath=path;
+       newpath.setPath(newpathstr);
+       //Con::errorf("Path: %s/%s",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
+       Path np = _normalize(newpath);
+       FileSystemRef fs = _getFileSystemFromList(np);
+       if (fs != NULL){
+           FileNodeRef fnr = NULL;
+           fnr = fs->resolve(np);
+               if (fnr != NULL) {
+                   return (fnr);
+               }
+           }
+   }
    Path np = _normalize(path);
    FileSystemRef fs = _getFileSystemFromList(np);
-   if (fs != NULL)
-      return fs->resolve(np);
+   if (fs != NULL){
+       return fs->resolve(np);
+   }
    return NULL;
 }
 
@@ -917,6 +939,8 @@ DirectoryRef CreateDirectory(const Path &path)
 
 FileRef OpenFile(const Path &path, File::AccessMode mode)
 {
+
+   //Con::errorf("Checking %s/%s",path.getPath().c_str(),path.getFullFileName().c_str());
    return sgMountSystem.openFile(path,mode);
 }
 
@@ -1045,6 +1069,7 @@ S32 CompareModifiedTimes(const Path& p1, const Path& p2)
 
 FileNodeRef GetFileNode(const Path &path)
 {
+
    return sgMountSystem.getFileNode(path);
 }
 

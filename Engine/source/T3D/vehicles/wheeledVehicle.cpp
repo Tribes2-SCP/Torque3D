@@ -50,8 +50,8 @@
 // Collision masks are used to determine what type of objects the
 // wheeled vehicle will collide with.
 static U32 sClientCollisionMask =
-      TerrainObjectType     | PlayerObjectType  | 
-      StaticShapeObjectType | VehicleObjectType | 
+      TerrainObjectType     | PlayerObjectType  |
+      StaticShapeObjectType | VehicleObjectType |
       VehicleBlockerObjectType;
 
 // Gravity constant
@@ -97,12 +97,12 @@ bool WheeledVehicleTire::preload(bool server, String &errorStr)
 {
    // Load up the tire shape.  ShapeBase has an option to force a
    // CRC check, this is left out here, but could be easily added.
-   if (shapeName && shapeName[0]) 
+   if (shapeName && shapeName[0])
    {
 
       // Load up the shape resource
       shape = ResourceManager::get().load(shapeName);
-      if (!bool(shape)) 
+      if (!bool(shape))
       {
          errorStr = String::ToString("WheeledVehicleTire: Couldn't load shape \"%s\"",shapeName);
          return false;
@@ -349,19 +349,34 @@ bool WheeledVehicleData::preload(bool server, String &errorStr)
    // Extract wheel information from the shape
    TSThread* thread = si->addThread();
    Wheel* wp = wheel;
-   char buff[10];
+   char buff[13];
+
+   bool usingT2Shape = false;
    for (S32 i = 0; i < MaxWheels; i++) {
 
       // The wheel must have a hub node to operate at all.
       dSprintf(buff,sizeof(buff),"hub%d",i);
       wp->springNode = mShape->findNode(buff);
+
+      // Try for the T2 spring node then
+      if (wp->springNode == -1)
+      {
+          dSprintf(buff,sizeof(buff),"DumSpring%d_",i);
+          wp->springNode = mShape->findNode(buff);
+
+          if (wp->springNode != -1)
+               usingT2Shape = true;
+      }
+
       if (wp->springNode != -1) {
+
 
          // Check for spring animation.. If there is none we just grab
          // the current position of the hub. Otherwise we'll animate
          // and get the position at time 0.
          dSprintf(buff,sizeof(buff),"spring%d",i);
          wp->springSequence = mShape->findSequence(buff);
+
          if (wp->springSequence == -1)
             si->mNodeTransforms[wp->springNode].getColumn(3, &wp->pos);
          else {
@@ -386,6 +401,30 @@ bool WheeledVehicleData::preload(bool server, String &errorStr)
       }
    }
    wheelCount = wp - wheel;
+
+   // If this is a T2 mesh, kill the unnecessary wheel nodes -- we don't need them
+   // because Torque3D handles wheels differently than T2 which involves creating
+   // individual wheels.
+   if (usingT2Shape)
+   {
+     for (U32 iteration = 0; iteration < wheelCount; iteration++)
+     {
+          dSprintf(buff,sizeof(buff),"DumWheel%d_", iteration);
+
+          // FIXME: Actually remove these nodes, right now it isn't because
+          // it produces the incorrect node behavior due to reassignment.
+          // We pretty much just need to work out node removal correctly.
+          mShape->setNodeTransform(buff, Point3F(0, 0, 9000), QuatF());
+     }
+
+     // Try and locate a TSMesh for one of the wheels
+     // FIXME: This will probably break spectacularly for mod wheeled vehicle
+     // shapes. Is there a better way to find wheel meshes and figure out where
+     // they correspond to? Or is that correspondance even necessary?
+     TSMesh* wheelMesh = mShape->findMesh("G_WheelBR_");
+     if (!wheelMesh)
+          Con::errorf("WheeledVehicleData:: Failed to locate a usable T2 Wheel mesh!");
+   }
 
    // Check for steering. Should think about normalizing the
    // steering animation the way the suspension is, but I don't
@@ -421,7 +460,7 @@ bool WheeledVehicleData::mirrorWheel(Wheel* we)
 {
    we->opposite = -1;
    for (Wheel* wp = wheel; wp != we; wp++)
-      if (mFabs(wp->pos.y - we->pos.y) < 0.5) 
+      if (mFabs(wp->pos.y - we->pos.y) < 0.5)
       {
          we->pos.x = -wp->pos.x;
          we->pos.y = wp->pos.y;
@@ -465,7 +504,7 @@ void WheeledVehicleData::initPersistFields()
    addField("brakeTorque", TypeF32, Offset(brakeTorque, WheeledVehicleData),
       "@brief Torque applied when braking.\n\n"
       "This controls how fast the vehicle will stop when the brakes are applied." );
-   
+
    Parent::initPersistFields();
 }
 
@@ -595,12 +634,12 @@ bool WheeledVehicle::onNewDataBlock(GameBaseData* dptr, bool reload)
 {
    // Delete any existing wheel resources if we're switching
    // datablocks.
-   if (mDataBlock) 
+   if (mDataBlock)
    {
       Wheel* wend = &mWheel[mDataBlock->wheelCount];
-      for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+      for (Wheel* wheel = mWheel; wheel < wend; wheel++)
       {
-         if (!wheel->emitter.isNull()) 
+         if (!wheel->emitter.isNull())
          {
             wheel->emitter->deleteWhenEmpty();
             wheel->emitter = 0;
@@ -622,7 +661,7 @@ bool WheeledVehicle::onNewDataBlock(GameBaseData* dptr, bool reload)
       mRigid.setObjectInertia(mObjBox.maxExtents - mObjBox.minExtents);
 
    // Initialize the wheels...
-   for (S32 i = 0; i < mDataBlock->wheelCount; i++) 
+   for (S32 i = 0; i < mDataBlock->wheelCount; i++)
    {
       Wheel* wheel = &mWheel[i];
       wheel->data = &mDataBlock->wheel[i];
@@ -674,7 +713,7 @@ bool WheeledVehicle::onNewDataBlock(GameBaseData* dptr, bool reload)
    else
       mTailLightThread = 0;
 
-   if (isGhost()) 
+   if (isGhost())
    {
       // Create the sounds ahead of time.  This reduces runtime
       // costs and makes the system easier to understand.
@@ -741,7 +780,7 @@ void WheeledVehicle::getWheelInstAndTransform( U32 index, TSShapeInstance** inst
 
    const Wheel* wheel = &mWheel[index];
    *inst = wheel->shapeInstance;
-   
+
    if ( !xfrm || !wheel->shapeInstance )
       return;
 
@@ -871,14 +910,14 @@ void WheeledVehicle::updateForces(F32 dt)
    // Calculate Engine and brake torque values used later by in
    // wheel calculations.
    F32 engineTorque,brakeVel;
-   if (mBraking) 
+   if (mBraking)
    {
       brakeVel = (mDataBlock->brakeTorque / aMomentum) * dt;
       engineTorque = 0;
    }
-   else 
+   else
    {
-      if (mThrottle) 
+      if (mThrottle)
       {
          engineTorque = mDataBlock->engineTorque * mThrottle;
          brakeVel = 0;
@@ -886,7 +925,7 @@ void WheeledVehicle::updateForces(F32 dt)
          if (mThrottle > 0 && mJetting)
             engineTorque *= 2;
       }
-      else 
+      else
       {
          // Engine brake.
          brakeVel = (mDataBlock->engineBrake / aMomentum) * dt;
@@ -905,9 +944,9 @@ void WheeledVehicle::updateForces(F32 dt)
    // the ground.
    U32 contactCount = 0;
    F32 verticalLoad = 0;
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
    {
-      if (wheel->tire && wheel->spring && wheel->surface.contact) 
+      if (wheel->tire && wheel->spring && wheel->surface.contact)
       {
          verticalLoad += wheel->spring->force * (1 - wheel->extension);
          contactCount++;
@@ -917,13 +956,13 @@ void WheeledVehicle::updateForces(F32 dt)
       verticalLoad /= contactCount;
 
    // Sum up spring and wheel torque forces
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++)  
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
    {
       if (!wheel->tire || !wheel->spring)
          continue;
 
       F32 Fy = 0;
-      if (wheel->surface.contact) 
+      if (wheel->surface.contact)
       {
 
          // First, let's compute the wheel's position, and worldspace velocity
@@ -1019,7 +1058,7 @@ void WheeledVehicle::updateForces(F32 dt)
          F32 mu = surfaceFriction * (wheel->slipping ? wheel->tire->kineticFriction : wheel->tire->staticFriction);
          F32 Fn = verticalLoad * mu; Fn *= Fn;
          F32 Fw = Fx * Fx + Fy * Fy;
-         if (Fw > Fn) 
+         if (Fw > Fn)
          {
             F32 K = mSqrt(Fn / Fw);
             Fy *= K;
@@ -1029,7 +1068,7 @@ void WheeledVehicle::updateForces(F32 dt)
             wheel->slip = 1 - K;
             wheel->slipping = true;
          }
-         else 
+         else
          {
             wheel->slipping = false;
             wheel->slip = 0;
@@ -1044,7 +1083,7 @@ void WheeledVehicle::updateForces(F32 dt)
          mRigid.torque += t;
          mRigid.force += forceVector;
       }
-      else 
+      else
       {
          // Wheel not in contact with the ground
          wheel->torqueScale  = 0;
@@ -1059,7 +1098,7 @@ void WheeledVehicle::updateForces(F32 dt)
 
       // Adjust the wheel's angular velocity based on engine torque
       // and tire deformation forces.
-      if (wheel->powered) 
+      if (wheel->powered)
       {
          F32 maxAvel = mDataBlock->maxWheelSpeed / wheel->tire->radius;
          wheel->torqueScale = (mFabs(wheel->avel) > maxAvel) ? 0 :
@@ -1131,20 +1170,20 @@ void WheeledVehicle::extendWheels(bool clientHack)
    disableCollision();
 
    MatrixF currMatrix;
-   
+
    if(clientHack)
       currMatrix = getRenderTransform();
    else
       mRigid.getTransform(&currMatrix);
-   
+
 
    // Does a single ray cast down for now... this will have to be
    // changed to something a little more complicated to avoid getting
    // stuck in cracks.
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
    {
-      if (wheel->tire && wheel->spring) 
+      if (wheel->tire && wheel->spring)
       {
          wheel->extension = 1;
 
@@ -1159,7 +1198,7 @@ void WheeledVehicle::extendWheels(bool clientHack)
          ts = ts / (1+ts);
 
          RayInfo rInfo;
-         if (mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, &rInfo)) 
+         if (mContainer->castRay(sp, ep, sClientCollisionMask & ~PlayerObjectType, &rInfo))
          {
             wheel->surface.contact  = true;
             wheel->extension = (rInfo.t < ts)? 0: (rInfo.t - ts) / (1 - ts);
@@ -1168,7 +1207,7 @@ void WheeledVehicle::extendWheels(bool clientHack)
             wheel->surface.material = rInfo.material;
             wheel->surface.object   = rInfo.object;
          }
-         else 
+         else
          {
             wheel->surface.contact = false;
             wheel->slipping = true;
@@ -1187,9 +1226,9 @@ void WheeledVehicle::extendWheels(bool clientHack)
 void WheeledVehicle::updateWheelThreads()
 {
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
    {
-      if (wheel->tire && wheel->spring && wheel->springThread) 
+      if (wheel->tire && wheel->spring && wheel->springThread)
       {
          // Scale the spring animation time to match the current
          // position of the wheel.  We'll also check to make sure
@@ -1214,18 +1253,18 @@ void WheeledVehicle::updateWheelParticles(F32 dt)
 {
    // OMG l33t hax
    extendWheels(true);
-   
+
    Point3F vel = Parent::getVelocity();
    F32 speed = vel.len();
 
    // Don't bother if we're not moving.
-   if (speed > 1.0f)  
+   if (speed > 1.0f)
    {
       Point3F axis = vel;
       axis.normalize();
 
       Wheel* wend = &mWheel[mDataBlock->wheelCount];
-      for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+      for (Wheel* wheel = mWheel; wheel < wend; wheel++)
       {
          // Is this wheel in contact with the ground?
          if (wheel->tire && wheel->spring && !wheel->emitter.isNull() &&
@@ -1273,7 +1312,7 @@ void WheeledVehicle::updateEngineSound(F32 level)
 
    // Adjust pitch
    F32 pitch = ((level-sIdleEngineVolume) * 1.3f);
-   if (pitch < 0.4f)  
+   if (pitch < 0.4f)
       pitch = 0.4f;
 
    mEngineSound->setPitch( pitch );
@@ -1289,7 +1328,7 @@ void WheeledVehicle::updateSquealSound(F32 level)
    if ( !mSquealSound )
       return;
 
-   if ( level < sMinSquealVolume ) 
+   if ( level < sMinSquealVolume )
    {
       mSquealSound->stop();
       return;
@@ -1312,7 +1351,7 @@ void WheeledVehicle::updateJetSound()
    if ( !mJetSound )
       return;
 
-   if ( !mJetting ) 
+   if ( !mJetting )
    {
       mJetSound->stop();
       return;
@@ -1375,8 +1414,8 @@ void WheeledVehicle::prepBatchRender(SceneRenderState* state, S32 mountedImageIn
    if ( mountedImageIndex != -1 )
       return;
 
-   // Set up our render state *here*, 
-   // before the push world matrix, so 
+   // Set up our render state *here*,
+   // before the push world matrix, so
    // that wheel rendering will be correct.
    TSRenderState rdata;
    rdata.setSceneState( state );
@@ -1395,9 +1434,9 @@ void WheeledVehicle::prepBatchRender(SceneRenderState* state, S32 mountedImageIn
    GFX->setWorldMatrix( mat );
 
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
    {
-      if (wheel->shapeInstance) 
+      if (wheel->shapeInstance)
       {
          GFX->pushWorldMatrix();
 
@@ -1443,7 +1482,7 @@ void WheeledVehicle::writePacketData(GameConnection *connection, BitStream *stre
    stream->writeFlag(mBraking);
 
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
    {
       stream->write(wheel->avel);
       stream->write(wheel->Dy);
@@ -1458,7 +1497,7 @@ void WheeledVehicle::readPacketData(GameConnection *connection, BitStream *strea
    mBraking = stream->readFlag();
 
    Wheel* wend = &mWheel[mDataBlock->wheelCount];
-   for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+   for (Wheel* wheel = mWheel; wheel < wend; wheel++)
    {
       stream->read(&wheel->avel);
       stream->read(&wheel->Dy);
@@ -1480,12 +1519,12 @@ U32 WheeledVehicle::packUpdate(NetConnection *con, U32 mask, BitStream *stream)
    U32 retMask = Parent::packUpdate(con, mask, stream);
 
    // Update wheel datablock information
-   if (stream->writeFlag(mask & WheelMask)) 
+   if (stream->writeFlag(mask & WheelMask))
    {
       Wheel* wend = &mWheel[mDataBlock->wheelCount];
-      for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+      for (Wheel* wheel = mWheel; wheel < wend; wheel++)
       {
-         if (stream->writeFlag(wheel->tire && wheel->spring)) 
+         if (stream->writeFlag(wheel->tire && wheel->spring))
          {
             stream->writeRangedU32(wheel->tire->getId(),
                DataBlockObjectIdFirst,DataBlockObjectIdLast);
@@ -1507,10 +1546,10 @@ U32 WheeledVehicle::packUpdate(NetConnection *con, U32 mask, BitStream *stream)
 
    stream->writeFlag(mBraking);
 
-   if (stream->writeFlag(mask & PositionMask)) 
+   if (stream->writeFlag(mask & PositionMask))
    {
       Wheel* wend = &mWheel[mDataBlock->wheelCount];
-      for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+      for (Wheel* wheel = mWheel; wheel < wend; wheel++)
       {
          stream->write(wheel->avel);
          stream->write(wheel->Dy);
@@ -1525,16 +1564,16 @@ void WheeledVehicle::unpackUpdate(NetConnection *con, BitStream *stream)
    Parent::unpackUpdate(con,stream);
 
    // Update wheel datablock information
-   if (stream->readFlag()) 
+   if (stream->readFlag())
    {
       Wheel* wend = &mWheel[mDataBlock->wheelCount];
-      for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+      for (Wheel* wheel = mWheel; wheel < wend; wheel++)
       {
-         if (stream->readFlag()) 
+         if (stream->readFlag())
          {
             SimObjectId tid = stream->readRangedU32(DataBlockObjectIdFirst,DataBlockObjectIdLast);
             SimObjectId sid = stream->readRangedU32(DataBlockObjectIdFirst,DataBlockObjectIdLast);
-            if (!Sim::findObject(tid,wheel->tire) || !Sim::findObject(sid,wheel->spring)) 
+            if (!Sim::findObject(tid,wheel->tire) || !Sim::findObject(sid,wheel->spring))
             {
                con->setLastError("Invalid packet WheeledVehicle::unpackUpdate()");
                return;
@@ -1557,10 +1596,10 @@ void WheeledVehicle::unpackUpdate(NetConnection *con, BitStream *stream)
 
    mBraking = stream->readFlag();
 
-   if (stream->readFlag()) 
+   if (stream->readFlag())
    {
       Wheel* wend = &mWheel[mDataBlock->wheelCount];
-      for (Wheel* wheel = mWheel; wheel < wend; wheel++) 
+      for (Wheel* wheel = mWheel; wheel < wend; wheel++)
       {
          stream->read(&wheel->avel);
          stream->read(&wheel->Dy);

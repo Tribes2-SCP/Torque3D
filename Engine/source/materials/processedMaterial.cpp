@@ -171,7 +171,20 @@ String ProcessedMaterial::_getTexturePath(const String& filename)
 
 GFXTexHandle ProcessedMaterial::_createTexture( const char* filename, GFXTextureProfile *profile)
 {
-   return GFXTexHandle( _getTexturePath(filename), profile, avar("%s() - NA (line %d)", __FUNCTION__, __LINE__) );
+		char newName[1024]="";
+		strcat(newName,"textures/");
+		strncat(newName,filename,700);
+		GFXTexHandle texHandle=NULL;
+		texHandle=GFXTexHandle( _getTexturePath(newName), profile, avar("%s() - NA (line %d)", __FUNCTION__, __LINE__) );
+		if (texHandle) {
+			return texHandle;
+		} else {
+			texHandle=GFXTexHandle( _getTexturePath(filename), profile, avar("%s() - NA (line %d)", __FUNCTION__, __LINE__) );
+			if (texHandle) {
+				return texHandle;
+			}
+		}
+    return NULL;
 }
 
 void ProcessedMaterial::addStateBlockDesc(const GFXStateBlockDesc& sb)
