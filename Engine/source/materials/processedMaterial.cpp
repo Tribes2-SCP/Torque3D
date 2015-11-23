@@ -171,13 +171,9 @@ String ProcessedMaterial::_getTexturePath(const String& filename)
 
 GFXTexHandle ProcessedMaterial::_createTexture( const char* filename, GFXTextureProfile *profile)
 {
-	for (int i=0; i<20; i++) {
-		if (searchPath[i]==NULL) 
-			break;
 		char newName[1024]="";
-		strncat(newName,searchPath[i],500);
 		strcat(newName,"textures/");
-		strncat(newName,filename,400);
+		strncat(newName,filename,700);
 		GFXTexHandle texHandle=NULL;
 		texHandle=GFXTexHandle( _getTexturePath(newName), profile, avar("%s() - NA (line %d)", __FUNCTION__, __LINE__) );
 		if (texHandle) {
@@ -188,7 +184,6 @@ GFXTexHandle ProcessedMaterial::_createTexture( const char* filename, GFXTexture
 				return texHandle;
 			}
 		}
-	}
     return NULL;
 }
 

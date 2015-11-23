@@ -65,11 +65,7 @@
 
 ResourceBase getShapeResource(const char * path) 
 {
-	for (int i=0; i<SEARCH_PATH_SIZE; i++) {
-		if (searchPath[i]==NULL) 
-			break;
 		char newName[1024]="";
-		strncat(newName,searchPath[i],500);
 		strcat(newName,"shapes/");
 		strncat(newName,path,500);
 		Resource<TSShape> shape=NULL;
@@ -82,7 +78,6 @@ ResourceBase getShapeResource(const char * path)
 				return shape;
 			}
 		}
-	}
     return NULL;
 }
 

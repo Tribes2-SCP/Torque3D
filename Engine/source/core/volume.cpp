@@ -917,6 +917,18 @@ DirectoryRef CreateDirectory(const Path &path)
 
 FileRef OpenFile(const Path &path, File::AccessMode mode)
 {
+   Torque::FS::FileRef ref;
+   for (int i=0; i<SEARCH_PATH_SIZE; i++){
+       if (searchPath[i]==NULL)
+           break;
+       char newpath[1024]="";
+       strncat(newpath,searchPath[i],200);
+       strncat(newpath,path.getPath(),800);
+       if (sgMountSystem.isFile(newpath))
+           ref = sgMountSystem.openFile(newpath,mode);
+       if (ref!=NULL)
+           return ref;
+   }
    return sgMountSystem.openFile(path,mode);
 }
 
