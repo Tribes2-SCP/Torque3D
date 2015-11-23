@@ -32,7 +32,7 @@
 #include "core/volume.h"
 
 //Global Search Path
-char searchPath[SEARCH_PATH_SIZE][1024]={"","/","compat/base/","compat/base/shapes/","compat/base/interiors/",NULL};;
+char searchPath[SEARCH_PATH_SIZE][1024]={"/","compat/base/","compat/base/shapes/","compat/base/interiors/","",NULL};;
 
 const F32 TypeTraits< F32 >::MIN = - F32_MAX;
 const F32 TypeTraits< F32 >::MAX = F32_MAX;
