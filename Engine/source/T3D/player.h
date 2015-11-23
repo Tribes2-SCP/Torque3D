@@ -54,9 +54,9 @@ struct PlayerData: public ShapeBaseData {
    };
    bool renderFirstPerson;    ///< Render the player shape in first person
 
-   /// Render shadows while in first person when 
+   /// Render shadows while in first person when
    /// renderFirstPerson is disabled.
-   bool firstPersonShadows; 
+   bool firstPersonShadows;
 
    StringTableEntry  imageAnimPrefix;                             ///< Passed along to mounted images to modify
                                                                   ///  animation sequences played in third person. [optional]
@@ -153,12 +153,13 @@ struct PlayerData: public ShapeBaseData {
    F32 maxProneSideSpeed;           ///< Maximum side speed when prone
 
    // Jetting
-   F32 jetJumpForce;
-   F32 jetJumpEnergyDrain;    ///< Energy per jump
-   F32 jetMinJumpEnergy;
-   F32 jetMinJumpSpeed;
-   F32 jetMaxJumpSpeed;
-   F32 jetJumpSurfaceAngle;   ///< Angle vertical degrees
+   F32 jetForce;
+   F32 underwaterJetForce;
+   F32 underwaterVertJetFactor;
+   F32 underwaterJetEnergyDrain;
+   F32 jetEnergyDrain;
+   F32 minJetEnergy;
+   F32 maxJetHorizontalPercentage;
    /// @}
 
    /// @name Hitboxes
@@ -268,7 +269,7 @@ struct PlayerData: public ShapeBaseData {
       LandAnim,
       JetAnim,
 
-      // 
+      //
       NumTableActionAnims = JetAnim + 1,
 
       NumExtraActionAnims = 512 - NumTableActionAnims,
@@ -453,16 +454,16 @@ protected:
    };
    ActionState mState;              ///< What is the player doing? @see ActionState
    bool mFalling;                   ///< Falling in mid-air?
-   S32 mJumpDelay;                  ///< Delay till next jump   
-   
+   S32 mJumpDelay;                  ///< Delay till next jump
+
    Pose  mPose;
    bool  mAllowJumping;
-   bool  mAllowJetJumping;
+   bool  mAllowJetting;
    bool  mAllowSprinting;
    bool  mAllowCrouching;
    bool  mAllowProne;
    bool  mAllowSwimming;
-   
+
    S32 mContactTimer;               ///< Ticks since last contact
 
    Point3F mJumpSurfaceNormal;      ///< Normal of the surface the player last jumped on
@@ -473,6 +474,12 @@ protected:
    SFXSource* mWaterBreathSound;  ///< Sound for underwater breath
 
    SimObjectPtr<ShapeBase> mControlObject; ///< Controlling object
+
+   /// Player Jet state data
+   static const F32 sJetForceDistributionFactor = 0.1; ///< Percent per second
+   F32 mVerticalJetPercentage;
+   F32 mHorizontalJetPercentages[4];
+   bool mHorizontalJetStates[4];
 
    /// @name Animation threads & data
    /// @{
@@ -516,7 +523,7 @@ protected:
    Point3F mLastPos;          ///< Holds the last position for physics updates
    Point3F mLastWaterPos;     ///< Same as mLastPos, but for water
 
-   struct ContactInfo 
+   struct ContactInfo
    {
       bool contacted, jump, run;
       SceneObject *contactObject;
@@ -524,8 +531,8 @@ protected:
 
       void clear()
       {
-         contacted=jump=run=false; 
-         contactObject = NULL; 
+         contacted=jump=run=false;
+         contactObject = NULL;
          contactNormal.set(1,1,1);
       }
 
@@ -557,17 +564,17 @@ protected:
    TSThread *mShapeFPFlashThread[ShapeBase::MaxMountedImages];
    TSThread *mShapeFPSpinThread[ShapeBase::MaxMountedImages];
 
-   
+
   public:
-  
+
    // New collision
    OrthoBoxConvex mConvex;
    Box3F          mWorkingQueryBox;
 
-   /// Standing / Crouched / Prone or Swimming   
+   /// Standing / Crouched / Prone or Swimming
    Pose getPose() const { return mPose; }
    virtual const char* getPoseName() const;
-   
+
    /// Setting this from script directly might not actually work,
    /// This is really just a helper for the player class so that its bounding box
    /// will get resized appropriately when the pose changes
@@ -639,14 +646,14 @@ protected:
    void setControllingClient(GameConnection* client);
 
    void calcClassRenderData();
-   
+
    /// Play sound for foot contact.
    ///
    /// @param triggeredLeft If true, left foot hit; right otherwise.
    /// @param contactMaterial Material onto which the player stepped; may be NULL.
    /// @param contactObject Object onto which the player stepped; may be NULL.
    void playFootstepSound( bool triggeredLeft, Material* contactMaterial, SceneObject* contactObject );
-   
+
    /// Play an impact sound.
    void playImpactSound();
 
@@ -655,6 +662,11 @@ protected:
    F32  deathDelta(Point3F &delta);
    void updateDeathOffsets();
    bool inSittingAnim();
+
+   /// @name Jetting
+   void distributeJetForce(void);
+   U32 activeHorizontalJetCount(void);
+   /// @}
 
    /// @name Water
    /// @{
@@ -687,7 +699,7 @@ public:
    virtual DisplayPose calcCameraDeltaPose(GameConnection *con, const DisplayPose& inPose);
    void getCameraParameters(F32 *min, F32 *max, Point3F *offset, MatrixF *rot);
    void getMuzzleTransform(U32 imageSlot,MatrixF* mat);
-   void getRenderMuzzleTransform(U32 imageSlot,MatrixF* mat);   
+   void getRenderMuzzleTransform(U32 imageSlot,MatrixF* mat);
 
    virtual void getMuzzleVector(U32 imageSlot,VectorF* vec);
    /// @}
@@ -705,14 +717,14 @@ public:
 
    void allowAllPoses();
    void allowJumping(bool state) { mAllowJumping = state; }
-   void allowJetJumping(bool state) { mAllowJetJumping = state; }
+   void allowJetting(bool state) { mAllowJetting = state; }
    void allowSprinting(bool state) { mAllowSprinting = state; }
    void allowCrouching(bool state) { mAllowCrouching = state; }
    void allowProne(bool state) { mAllowProne = state; }
    void allowSwimming(bool state) { mAllowSwimming = state; }
 
    bool canJump();                                         ///< Can the player jump?
-   bool canJetJump();                                      ///< Can the player jet?
+   bool canJet();                                      ///< Can the player jet?
    bool canSwim();                                         ///< Can the player swim?
    bool canCrouch();
    bool canStand();
@@ -746,7 +758,7 @@ public:
    // Object control
    void setControlObject(ShapeBase *obj);
    ShapeBase* getControlObject();
-   
+
    //
    void updateWorkingCollisionSet();
    virtual void processTick(const Move *move);
@@ -764,7 +776,7 @@ public:
    void unpackUpdate(NetConnection *conn,           BitStream *stream);
 
    virtual void prepRenderImage( SceneRenderState* state );
-   virtual void renderConvex( ObjectRenderInst *ri, SceneRenderState *state, BaseMatInstance *overrideMat );   
+   virtual void renderConvex( ObjectRenderInst *ri, SceneRenderState *state, BaseMatInstance *overrideMat );
    virtual void renderMountedImage( U32 imageSlot, TSRenderState &rstate, SceneRenderState *state );
 };
 
