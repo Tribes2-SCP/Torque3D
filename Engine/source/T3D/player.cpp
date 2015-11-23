@@ -1614,7 +1614,7 @@ Player::Player()
    mInWater = false;
    mPose = StandPose;
    mContactTimer = 0;
-   mVerticalJetPercentage = 1;
+   mVerticalJetForce = 0;
    mJumpDelay = 0;
    mJumpSurfaceLastContact = 0;
    mJumpSurfaceNormal.set(0.0f, 0.0f, 1.0f);
@@ -1942,6 +1942,12 @@ bool Player::onNewDataBlock( GameBaseData *dptr, bool reload )
    // Initialize our scaled attributes as well
    onScaleChanged();
    resetWorldBox();
+
+   // Reinitialize the jetting system
+   mVerticalJetForce = mDataBlock->jetForce;
+
+   for (U32 i = 0; i < 4; i++)
+        mHorizontalJetForces[i] = 0;
 
    scriptOnNewDataBlock();
    return true;
@@ -2510,49 +2516,66 @@ U32 Player::activeHorizontalJetCount(void)
   return result;
 }
 
-// FIXME: Redundant code is fugly.
+F32 Player::sumHorizontalJetForces(void)
+{
+    F32 result = 0;
+    for (U32 i = 0; i < 4; i++)
+        result += mHorizontalJetForces[i];
+
+    return result;
+}
+
 void Player::distributeJetForce(void)
 {
+   // We move force back to vertical jets if a jet is off
+   for (U32 i = 0; i < 4; i++)
+        if (!mHorizontalJetStates[i] && mHorizontalJetForces[i] > 0)
+        {
+            F32 removedForce = mDataBlock->jetForce * Player::sJetForceDistributionFactor * TickSec;
+            mHorizontalJetForces[i] -= mHorizontalJetForces[i];
+
+            if (mHorizontalJetForces[i] < 0)
+            {
+                removedForce -= -mHorizontalJetForces[i];
+                mHorizontalJetForces[i] = 0;
+            }
+
+            mVerticalJetForce += removedForce;
+        }
+
+   // If we're jetting, we move vertical force to active jets
    if (mJetting)
    {
-     // Distribute energy to active horizontal jets
-     F32 verticalForceTaken = activeHorizontalJetCount() * Player::sJetForceDistributionFactor * TickSec;
-     mVerticalJetPercentage -= verticalForceTaken;
+        // Can we even jet?
+        if (mEnergy < mDataBlock->minJetEnergy)
+            return;
 
-     // Ensure that we don't exceed max horizontal jet percentage
-     if (1 - mVerticalJetPercentage > mDataBlock->maxHorizontalJetPercentage)
-     {
-          mVerticalJetPercentage = 1 - mDataBlock->maxHorizontalJetPercentage;
-          return;
-     }
+        // Kill some jet energy
+        mEnergy -= mDataBlock->jetEnergyDrain * TickSec;
 
-     for (U32 i = 0; i < 4; i++)
-          if (mHorizontalJetStates[i])
-          {
-               F32 percentageTaken = verticalForceTaken / activeHorizontalJetCount();
-               mHorizontalJetPercentages[i] += percentageTaken;
-          }
-          else if (mHorizontalJetPercentages[i] > 0)
-          {
-               F32 percentageTaken = mHorizontalJetPercentages[i] * Player::sJetForceDistributionFactor * TickSec;
-               mHorizontalJetPercentages[i] -= percentageTaken;
-               mHorizontalJetPercentages[i] = mHorizontalJetPercentages[i] < 0 ? 0 : mHorizontalJetPercentages[i];
-               mVerticalJetPercentage += percentageTaken;
-          }
-   }
-   else
-   {
-      // Slowly recover our percentage from horizontal jets
-     for (U32 i = 0; i < 4; i++)
-          if (mHorizontalJetPercentages[i] > 0)
-          {
-               F32 percentageTaken = mHorizontalJetPercentages[i] * Player::sJetForceDistributionFactor * TickSec;
-               mHorizontalJetPercentages[i] -= percentageTaken;
-               mHorizontalJetPercentages[i] = mHorizontalJetPercentages[i] < 0 ? 0 : mHorizontalJetPercentages[i];
-               mVerticalJetPercentage += percentageTaken;
-          }
+        F32 distributedForceTotal = activeHorizontalJetCount() * mDataBlock->jetForce * Player::sJetForceDistributionFactor * TickSec;
+        F32 distributedForce = distributedForceTotal / activeHorizontalJetCount();
 
-     mVerticalJetPercentage = mVerticalJetPercentage > 1 ? 1 : mVerticalJetPercentage;
+        for (U32 i = 0; i < 4; i++)
+            if (mHorizontalJetStates[i])
+                mHorizontalJetForces[i] += distributedForce;
+
+        // Now that we distributed the forces, we should ensure that we're within  max horizontal jet percentage
+        F32 horizontalJetForceSum = sumHorizontalJetForces();
+
+        if (mDataBlock->jetForce / horizontalJetForceSum > mDataBlock->maxJetHorizontalPercentage)
+        {
+            // We've exceeded max percentage
+            F32 maxHorizontalJetForce = mDataBlock->maxJetHorizontalPercentage * mDataBlock->jetForce;
+
+            for (U32 i = 0; i < 4; i++)
+                if (mHorizontalJetForces[i] > maxHorizontalJetForce)
+                    mHorizontalJetForces[i] = maxHorizontalJetForce;
+
+            // We've maxed out our jets, so force the minimum percentage on the vertical jets
+            mVerticalJetForce = mDataBlock->jetForce * (1 - mDataBlock->maxJetHorizontalPercentage);
+        }
+        return;
    }
 }
 
@@ -3084,14 +3107,12 @@ void Player::updateMove(const Move* move)
    if (move->trigger[sJumpJetTrigger] && !isMounted() && canJet())
    {
       mJetting = true;
-      mVelocity.z += mDataBlock->jetForce * mVerticalJetPercentage * TickMs;
+      mVelocity.z += mVerticalJetForce * TickMs;
 
       mHorizontalJetStates[0] = move->x < 0; // Jetting Left
       mHorizontalJetStates[1] = move->x > 0; // Jetting Right
       mHorizontalJetStates[2] = move->y < 0; // Jetting Back
       mHorizontalJetStates[3] = move->y > 0; // Jetting Forward
-
-      if ()
    }
    else
    {

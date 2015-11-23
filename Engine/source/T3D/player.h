@@ -477,8 +477,8 @@ protected:
 
    /// Player Jet state data
    static const F32 sJetForceDistributionFactor = 0.1; ///< Percent per second
-   F32 mVerticalJetPercentage;
-   F32 mHorizontalJetPercentages[4];
+   F32 mVerticalJetForce;
+   F32 mHorizontalJetForces[4];
    bool mHorizontalJetStates[4];
 
    /// @name Animation threads & data
@@ -666,6 +666,7 @@ protected:
    /// @name Jetting
    void distributeJetForce(void);
    U32 activeHorizontalJetCount(void);
+   F32 sumHorizontalJetForces(void);
    /// @}
 
    /// @name Water
