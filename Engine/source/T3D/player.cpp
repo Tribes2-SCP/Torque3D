@@ -1666,7 +1666,10 @@ Player::Player()
    // Initialize all the jet forces to zero
    mVerticalJetForce = 0;
    for (U32 i = 0; i < 4; i++)
-        mHorizontalJetForces[i] = 0;
+   {
+      mHorizontalJetForces[i] = 0;
+      mHorizontalJetStates[i] = false;
+   }
 }
 
 Player::~Player()
@@ -3116,19 +3119,19 @@ void Player::updateMove(const Move* move)
       // Apply jet forces
       MatrixF transform = getTransform();
 
-      mVelocity.z += mVerticalJetForce * TickMs;
+      mAppliedForce.z += mVerticalJetForce;
 
       if (mHorizontalJetStates[0])
-        mVelocity += -transform.getRightVector() * TickMs * mHorizontalJetForces[0];
+        mAppliedForce += -transform.getRightVector() * mHorizontalJetForces[0];
 
       if (mHorizontalJetStates[1])
-        mVelocity += transform.getRightVector() * TickMs * mHorizontalJetForces[1];
+        mAppliedForce += transform.getRightVector() * mHorizontalJetForces[1];
 
       if (mHorizontalJetStates[2])
-        mVelocity += -transform.getForwardVector() * TickMs * mHorizontalJetForces[2];
+        mAppliedForce += -transform.getForwardVector() * mHorizontalJetForces[2];
 
       if (mHorizontalJetStates[3])
-        mVelocity += transform.getForwardVector() * TickMs * mHorizontalJetForces[3];
+        mAppliedForce += transform.getForwardVector() * mHorizontalJetForces[3];
 
       // Calculate the jet states
       mHorizontalJetStates[0] = move->x < 0; // Jetting Left
@@ -3144,10 +3147,8 @@ void Player::updateMove(const Move* move)
          mHorizontalJetStates[i] = false;
    }
 
-
    // Accounts for distribution to and from horizontal jets
    distributeJetForce();
-
 
    // Add in force from physical zones...
    acc += (mAppliedForce / getMass()) * TickSec;
