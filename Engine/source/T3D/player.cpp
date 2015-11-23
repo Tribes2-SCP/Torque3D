@@ -3112,8 +3112,25 @@ void Player::updateMove(const Move* move)
    if (move->trigger[sJumpJetTrigger] && !isMounted() && canJet())
    {
       mJetting = true;
+
+      // Apply jet forces
+      MatrixF transform = getTransform();
+
       mVelocity.z += mVerticalJetForce * TickMs;
 
+      if (mHorizontalJetStates[0])
+        mVelocity += -transform.getRightVector() * TickMs * mHorizontalJetForces[0];
+
+      if (mHorizontalJetStates[1])
+        mVelocity += transform.getRightVector() * TickMs * mHorizontalJetForces[1];
+
+      if (mHorizontalJetStates[2])
+        mVelocity += -transform.getForwardVector() * TickMs * mHorizontalJetForces[2];
+
+      if (mHorizontalJetStates[3])
+        mVelocity += transform.getForwardVector() * TickMs * mHorizontalJetForces[3];
+
+      // Calculate the jet states
       mHorizontalJetStates[0] = move->x < 0; // Jetting Left
       mHorizontalJetStates[1] = move->x > 0; // Jetting Right
       mHorizontalJetStates[2] = move->y < 0; // Jetting Back
