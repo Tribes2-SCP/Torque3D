@@ -1662,6 +1662,11 @@ Player::Player()
    mLastAbsoluteYaw = 0.0f;
    mLastAbsolutePitch = 0.0f;
    mLastAbsoluteRoll = 0.0f;
+
+   // Initialize all the jet forces to zero
+   mVerticalJetForce = 0;
+   for (U32 i = 0; i < 4; i++)
+        mHorizontalJetForces[i] = 0;
 }
 
 Player::~Player()
