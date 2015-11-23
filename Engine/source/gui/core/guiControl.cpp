@@ -715,9 +715,12 @@ bool GuiControl::onAdd()
       GuiControlProfile *profile = NULL;
       Sim::findObject( "GuiDefaultProfile", profile );
 
-      AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified profile and GuiDefaultProfile does not exist!") );
-
-      setControlProfile( profile );
+      //AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified profile and GuiDefaultProfile does not exist!") );
+      if (profile != NULL) 
+      {
+          Con::errorf("GuiControl::onAdd() unable to find specified profile and GuiDefaultProfile does not exist!");
+          setControlProfile( profile );
+      }
    }
 
    // We must also assign a valid TooltipProfile...
@@ -726,9 +729,12 @@ bool GuiControl::onAdd()
       GuiControlProfile *profile = NULL;
       Sim::findObject( "GuiTooltipProfile", profile );
 
-      AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified tooltip profile and GuiTooltipProfile does not exist!") );
-
-      setTooltipProfile( profile );
+      //AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified tooltip profile and GuiTooltipProfile does not exist!") );
+      if (profile != NULL)
+      {
+          Con::errorf("GuiControl::onAdd() unable to find specified tooltip profile and GuiTooltipProfile does not exist!");
+          setTooltipProfile( profile );
+      }
    }
 
    // Notify Script.
