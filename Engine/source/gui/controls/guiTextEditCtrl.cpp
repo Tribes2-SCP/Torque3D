@@ -37,15 +37,15 @@
 #include "core/strings/unicode.h"
 #include "console/engineAPI.h"
 
-IMPLEMENT_CONOBJECT(GuiTextEditCtrl);
+IMPLEMENT_CONOBJECT(ShellTextEditCtrl);
 
-ConsoleDocClass( GuiTextEditCtrl,
+ConsoleDocClass( ShellTextEditCtrl,
    "@brief A component that places a text entry box on the screen.\n\n"
 
    "Fonts and sizes are changed using profiles. The text value can be set or entered by a user.\n\n"
 
    "@tsexample\n"
-   "   new GuiTextEditCtrl(MessageHud_Edit)\n"
+   "   new ShellTextEditCtrl(MessageHud_Edit)\n"
    "	{\n"
    "		 text = \"Hello World\";\n"
    "		 validate = \"validateCommand();\"\n"
@@ -66,12 +66,12 @@ ConsoleDocClass( GuiTextEditCtrl,
    "@ingroup GuiControls\n"
 );
 
-IMPLEMENT_CALLBACK( GuiTextEditCtrl, onTabComplete, void, (const char* val),( val ),
+IMPLEMENT_CALLBACK( ShellTextEditCtrl, onTabComplete, void, (const char* val),( val ),
    "@brief Called if tabComplete is true, and the 'tab' key is pressed.\n\n"
    "@param val Input to mimick the '1' sent by the actual tab key button press.\n"
    "@tsexample\n"
    "// Tab key has been pressed, causing the callback to occur.\n"
-   "GuiTextEditCtrl::onTabComplete(%this,%val)\n"
+   "ShellTextEditCtrl::onTabComplete(%this,%val)\n"
    "	{\n"
    "		//Code to run when the onTabComplete callback occurs\n"
    "	}\n"
@@ -80,11 +80,11 @@ IMPLEMENT_CALLBACK( GuiTextEditCtrl, onTabComplete, void, (const char* val),( va
    "@see GuiControl\n\n"
 );
 
-IMPLEMENT_CALLBACK( GuiTextEditCtrl, onReturn, void, (),(),
+IMPLEMENT_CALLBACK( ShellTextEditCtrl, onReturn, void, (),(),
    "@brief Called when the 'Return' or 'Enter' key is pressed.\n\n"
    "@tsexample\n"
    "// Return or Enter key was pressed, causing the callback to occur.\n"
-   "GuiTextEditCtrl::onReturn(%this)\n"
+   "ShellTextEditCtrl::onReturn(%this)\n"
    "	{\n"
    "		// Code to run when the onReturn callback occurs\n"
    "	}\n"
@@ -93,11 +93,11 @@ IMPLEMENT_CALLBACK( GuiTextEditCtrl, onReturn, void, (),(),
    "@see GuiControl\n\n"
 );
 
-IMPLEMENT_CALLBACK( GuiTextEditCtrl, onValidate, void, (),(),
+IMPLEMENT_CALLBACK( ShellTextEditCtrl, onValidate, void, (),(),
    "@brief Called whenever the control is validated.\n\n"
    "@tsexample\n"
    "// The control gets validated, causing the callback to occur\n"
-   "GuiTextEditCtrl::onValidated(%this)\n"
+   "ShellTextEditCtrl::onValidated(%this)\n"
    "	{\n"
    "		// Code to run when the control is validated\n"
    "	}\n"
@@ -106,7 +106,7 @@ IMPLEMENT_CALLBACK( GuiTextEditCtrl, onValidate, void, (),(),
    "@see GuiControl\n\n"
 );
 
-GuiTextEditCtrl::GuiTextEditCtrl()
+ShellTextEditCtrl::ShellTextEditCtrl()
 {
    mInsertOn = true;
    mBlockStart = 0;
@@ -146,7 +146,7 @@ GuiTextEditCtrl::GuiTextEditCtrl()
    Sim::findObject( "InputDeniedSound", mDeniedSound );
 }
 
-GuiTextEditCtrl::~GuiTextEditCtrl()
+ShellTextEditCtrl::~ShellTextEditCtrl()
 {
    //delete the history buffer if it exists
    if (mHistoryBuf)
@@ -158,25 +158,25 @@ GuiTextEditCtrl::~GuiTextEditCtrl()
    }
 }
 
-void GuiTextEditCtrl::initPersistFields()
+void ShellTextEditCtrl::initPersistFields()
 {
    addGroup( "Text Input" );
    
-      addField("validate",          TypeRealString,Offset(mValidateCommand,   GuiTextEditCtrl), "Script command to be called when the first validater is lost.\n");
-      addField("escapeCommand",     TypeRealString,Offset(mEscapeCommand,     GuiTextEditCtrl), "Script command to be called when the Escape key is pressed.\n");
-      addField("historySize",       TypeS32,       Offset(mHistorySize,       GuiTextEditCtrl), "How large of a history buffer to maintain.\n");
-      addField("tabComplete",       TypeBool,      Offset(mTabComplete,       GuiTextEditCtrl), "If true, when the 'tab' key is pressed, it will act as if the Enter key was pressed on the control.\n");
-      addField("deniedSound",       TypeSFXTrackName, Offset(mDeniedSound, GuiTextEditCtrl), "If the attempted text cannot be entered, this sound effect will be played.\n");
-      addField("sinkAllKeyEvents",  TypeBool,      Offset(mSinkAllKeyEvents,  GuiTextEditCtrl), "If true, every key event will act as if the Enter key was pressed.\n");
-      addField("password",          TypeBool,      Offset(mPasswordText,      GuiTextEditCtrl), "If true, all characters entered will be stored in the control, however will display as the character stored in passwordMask.\n");
-      addField("passwordMask",      TypeString,    Offset(mPasswordMask,      GuiTextEditCtrl), "If 'password' is true, this is the character that will be used to mask the characters in the control.\n");
+      addField("validate",          TypeRealString,Offset(mValidateCommand,   ShellTextEditCtrl), "Script command to be called when the first validater is lost.\n");
+      addField("escapeCommand",     TypeRealString,Offset(mEscapeCommand,     ShellTextEditCtrl), "Script command to be called when the Escape key is pressed.\n");
+      addField("historySize",       TypeS32,       Offset(mHistorySize,       ShellTextEditCtrl), "How large of a history buffer to maintain.\n");
+      addField("tabComplete",       TypeBool,      Offset(mTabComplete,       ShellTextEditCtrl), "If true, when the 'tab' key is pressed, it will act as if the Enter key was pressed on the control.\n");
+      addField("deniedSound",       TypeSFXTrackName, Offset(mDeniedSound, ShellTextEditCtrl), "If the attempted text cannot be entered, this sound effect will be played.\n");
+      addField("sinkAllKeyEvents",  TypeBool,      Offset(mSinkAllKeyEvents,  ShellTextEditCtrl), "If true, every key event will act as if the Enter key was pressed.\n");
+      addField("password",          TypeBool,      Offset(mPasswordText,      ShellTextEditCtrl), "If true, all characters entered will be stored in the control, however will display as the character stored in passwordMask.\n");
+      addField("passwordMask",      TypeString,    Offset(mPasswordMask,      ShellTextEditCtrl), "If 'password' is true, this is the character that will be used to mask the characters in the control.\n");
       
    endGroup( "Text Input" );
 
    Parent::initPersistFields();
 }
 
-bool GuiTextEditCtrl::onAdd()
+bool ShellTextEditCtrl::onAdd()
 {
    if ( ! Parent::onAdd() )
       return false;
@@ -200,13 +200,13 @@ bool GuiTextEditCtrl::onAdd()
    return true;
 }
 
-void GuiTextEditCtrl::onStaticModified(const char* slotName, const char* newValue)
+void ShellTextEditCtrl::onStaticModified(const char* slotName, const char* newValue)
 {
    if(!dStricmp(slotName, "text"))
       setText(mText);
 }
 
-void GuiTextEditCtrl::execConsoleCallback()
+void ShellTextEditCtrl::execConsoleCallback()
 {
    // Execute the console command!
    Parent::execConsoleCallback();
@@ -216,7 +216,7 @@ void GuiTextEditCtrl::execConsoleCallback()
       Con::setVariable(mConsoleVariable, mTextBuffer.getPtr8());
 }
 
-void GuiTextEditCtrl::updateHistory( StringBuffer *inTxt, bool moveIndex )
+void ShellTextEditCtrl::updateHistory( StringBuffer *inTxt, bool moveIndex )
 {
    if(!mHistorySize)
       return;
@@ -251,18 +251,18 @@ void GuiTextEditCtrl::updateHistory( StringBuffer *inTxt, bool moveIndex )
       mHistoryIndex = mHistoryLast + 1;
 }
 
-void GuiTextEditCtrl::getText( char *dest )
+void ShellTextEditCtrl::getText( char *dest )
 {
    if ( dest )
       mTextBuffer.getCopy8((UTF8*)dest, GuiTextCtrl::MAX_STRING_LENGTH+1);
 }
 
-void GuiTextEditCtrl::getRenderText(char *dest)
+void ShellTextEditCtrl::getRenderText(char *dest)
 {
     getText( dest );
 }
  
-void GuiTextEditCtrl::setText( const UTF8 *txt )
+void ShellTextEditCtrl::setText( const UTF8 *txt )
 {
    if(txt && txt[0] != 0)
    {
@@ -275,7 +275,7 @@ void GuiTextEditCtrl::setText( const UTF8 *txt )
    mCursorPos = mTextBuffer.length();
 }
 
-void GuiTextEditCtrl::setText( const UTF16* txt)
+void ShellTextEditCtrl::setText( const UTF16* txt)
 {
    if(txt && txt[0] != 0)
    {
@@ -293,7 +293,7 @@ void GuiTextEditCtrl::setText( const UTF16* txt)
    mCursorPos = mTextBuffer.length();   
 }
 
-bool GuiTextEditCtrl::isAllTextSelected()
+bool ShellTextEditCtrl::isAllTextSelected()
 {
    if( mBlockStart == 0 && mBlockEnd == mTextBuffer.length() )
       return true;
@@ -301,27 +301,27 @@ bool GuiTextEditCtrl::isAllTextSelected()
       return false;
 }
 
-void GuiTextEditCtrl::selectAllText()
+void ShellTextEditCtrl::selectAllText()
 {
    mBlockStart = 0;
    mBlockEnd = mTextBuffer.length();
    setUpdate();
 }
 
-void GuiTextEditCtrl::clearSelectedText()
+void ShellTextEditCtrl::clearSelectedText()
 {
    mBlockStart = 0;
    mBlockEnd = 0;
    setUpdate();
 }
 
-void GuiTextEditCtrl::forceValidateText()
+void ShellTextEditCtrl::forceValidateText()
 {
    if( mValidateCommand.isNotEmpty() )
       evaluate( mValidateCommand );
 }
 
-void GuiTextEditCtrl::setCursorPos( const S32 newPos )
+void ShellTextEditCtrl::setCursorPos( const S32 newPos )
 {
    S32 charCount = mTextBuffer.length();
    S32 realPos = newPos > charCount ? charCount : newPos < 0 ? 0 : newPos;
@@ -332,7 +332,7 @@ void GuiTextEditCtrl::setCursorPos( const S32 newPos )
    }
 }
 
-S32 GuiTextEditCtrl::calculateCursorPos( const Point2I &globalPos )
+S32 ShellTextEditCtrl::calculateCursorPos( const Point2I &globalPos )
 {
    Point2I ctrlOffset = localToGlobalCoord( Point2I( 0, 0 ) );
    S32 charLength = 0;
@@ -372,7 +372,7 @@ S32 GuiTextEditCtrl::calculateCursorPos( const Point2I &globalPos )
    return count;
 }
 
-void GuiTextEditCtrl::onMouseDown( const GuiEvent &event )
+void ShellTextEditCtrl::onMouseDown( const GuiEvent &event )
 {
    if(!isActive())
       return;
@@ -416,7 +416,7 @@ void GuiTextEditCtrl::onMouseDown( const GuiEvent &event )
    setFirstResponder();
 }
 
-void GuiTextEditCtrl::onMouseDragged( const GuiEvent &event )
+void ShellTextEditCtrl::onMouseDragged( const GuiEvent &event )
 {
    S32 pos = calculateCursorPos( event.mousePoint );
 
@@ -444,7 +444,7 @@ void GuiTextEditCtrl::onMouseDragged( const GuiEvent &event )
    Parent::onMouseDragged(event);
 }
 
-void GuiTextEditCtrl::onMouseUp(const GuiEvent &event)
+void ShellTextEditCtrl::onMouseUp(const GuiEvent &event)
 {
    TORQUE_UNUSED(event);
    mDragHit = false;
@@ -452,7 +452,7 @@ void GuiTextEditCtrl::onMouseUp(const GuiEvent &event)
    mouseUnlock();
 }
 
-void GuiTextEditCtrl::saveUndoState()
+void ShellTextEditCtrl::saveUndoState()
 {
    //save the current state
    mUndoText.set(&mTextBuffer);
@@ -461,7 +461,7 @@ void GuiTextEditCtrl::saveUndoState()
    mUndoCursorPos  = mCursorPos;
 }
 
-void GuiTextEditCtrl::onCopy(bool andCut)
+void ShellTextEditCtrl::onCopy(bool andCut)
 {
    // Don't copy/cut password field!
    if(mPasswordText)
@@ -490,7 +490,7 @@ void GuiTextEditCtrl::onCopy(bool andCut)
 
 }
 
-void GuiTextEditCtrl::onPaste()
+void ShellTextEditCtrl::onPaste()
 {           
    //first, make sure there's something in the clipboard to copy...
    const UTF8 *clipboard = Platform::getClipboard();
@@ -538,7 +538,7 @@ void GuiTextEditCtrl::onPaste()
    mCursorPos += pasteLen;
 }
 
-void GuiTextEditCtrl::onUndo()
+void ShellTextEditCtrl::onUndo()
 {
     StringBuffer tempBuffer;
     S32 tempBlockStart;
@@ -564,7 +564,7 @@ void GuiTextEditCtrl::onUndo()
     mUndoCursorPos  = tempCursorPos;
 }
 
-bool GuiTextEditCtrl::onKeyDown(const GuiEvent &event)
+bool ShellTextEditCtrl::onKeyDown(const GuiEvent &event)
 {
    if ( !isActive() || !isAwake() )
       return false;
@@ -1180,7 +1180,7 @@ dealWithBackspace:
    return Parent::onKeyDown( event );
 }
 
-bool GuiTextEditCtrl::dealWithEnter( bool clearResponder )
+bool ShellTextEditCtrl::dealWithEnter( bool clearResponder )
 {
    //first validate
    if (mProfile->mReturnTab)
@@ -1213,7 +1213,7 @@ bool GuiTextEditCtrl::dealWithEnter( bool clearResponder )
    return true;
 }
 
-void GuiTextEditCtrl::setFirstResponder()
+void ShellTextEditCtrl::setFirstResponder()
 {
    Parent::setFirstResponder();
 
@@ -1230,7 +1230,7 @@ void GuiTextEditCtrl::setFirstResponder()
    }
 }
 
-void GuiTextEditCtrl::onLoseFirstResponder()
+void ShellTextEditCtrl::onLoseFirstResponder()
 {
    GuiCanvas *root = getRoot();
    if( root )
@@ -1252,7 +1252,7 @@ void GuiTextEditCtrl::onLoseFirstResponder()
    Parent::onLoseFirstResponder();
 }
 
-void GuiTextEditCtrl::onRender(Point2I offset, const RectI &updateRect)
+void ShellTextEditCtrl::onRender(Point2I offset, const RectI &updateRect)
 {
    RectI ctrlRect( offset, getExtent() );
 
@@ -1272,7 +1272,7 @@ void GuiTextEditCtrl::onRender(Point2I offset, const RectI &updateRect)
    drawText( ctrlRect, isFirstResponder() );
 }
 
-void GuiTextEditCtrl::onPreRender()
+void ShellTextEditCtrl::onPreRender()
 {
    if ( isFirstResponder() )
    {
@@ -1297,14 +1297,14 @@ void GuiTextEditCtrl::onPreRender()
    }
 }
 
-void GuiTextEditCtrl::drawText( const RectI &drawRect, bool isFocused )
+void ShellTextEditCtrl::drawText( const RectI &drawRect, bool isFocused )
 {
    StringBuffer textBuffer;
    Point2I drawPoint = drawRect.point;
    Point2I paddingLeftTop, paddingRightBottom;
 
    // Or else just copy it over.
-   char *renderText = Con::getReturnBuffer( GuiTextEditCtrl::MAX_STRING_LENGTH );
+   char *renderText = Con::getReturnBuffer( ShellTextEditCtrl::MAX_STRING_LENGTH );
    getRenderText( renderText );
 
    // Apply password masking (make the masking char optional perhaps?)
@@ -1488,29 +1488,29 @@ void GuiTextEditCtrl::drawText( const RectI &drawRect, bool isFocused )
       GFX->getDrawUtil()->drawLine( cursorStart, cursorEnd, mProfile->mCursorColor );
 }
 
-bool GuiTextEditCtrl::hasText()
+bool ShellTextEditCtrl::hasText()
 {
    return (mTextBuffer.length());
 }
 
-void GuiTextEditCtrl::playDeniedSound()
+void ShellTextEditCtrl::playDeniedSound()
 {
    if ( mDeniedSound )
       SFX->playOnce( mDeniedSound );
 }
 
-const char *GuiTextEditCtrl::getScriptValue()
+const char *ShellTextEditCtrl::getScriptValue()
 {
    return StringTable->insert(mTextBuffer.getPtr8());
 }
 
-void GuiTextEditCtrl::setScriptValue(const char *value)
+void ShellTextEditCtrl::setScriptValue(const char *value)
 {
    mTextBuffer.set(value);
    mCursorPos = mTextBuffer.length();
 }
 
-void GuiTextEditCtrl::handleCharInput( U16 ascii )
+void ShellTextEditCtrl::handleCharInput( U16 ascii )
 {
    S32 stringLen = mTextBuffer.length();
 
@@ -1598,7 +1598,7 @@ void GuiTextEditCtrl::handleCharInput( U16 ascii )
    execConsoleCallback();
 }
 
-S32 GuiTextEditCtrl::findPrevWord()
+S32 ShellTextEditCtrl::findPrevWord()
 {   
    // First the first word to the left of the current cursor position 
    // and return the positional index of its starting character.
@@ -1622,7 +1622,7 @@ S32 GuiTextEditCtrl::findPrevWord()
    return 0;
 }
 
-S32 GuiTextEditCtrl::findNextWord()
+S32 ShellTextEditCtrl::findNextWord()
 {
    // First the first word to the right of the current cursor position 
    // and return the positional index of its starting character.
@@ -1646,11 +1646,11 @@ S32 GuiTextEditCtrl::findNextWord()
    return mTextBuffer.length();
 }
 
-DefineEngineMethod( GuiTextEditCtrl, getText, const char*, (),,
+DefineEngineMethod( ShellTextEditCtrl, getText, const char*, (),,
    "@brief Acquires the current text displayed in this control.\n\n"
    "@tsexample\n"
    "// Acquire the value of the text control.\n"
-   "%text = %thisGuiTextEditCtrl.getText();\n"
+   "%text = %thisShellTextEditCtrl.getText();\n"
    "@endtsexample\n\n"
    "@return The current text within the control.\n\n"
    "@see GuiControl")
@@ -1658,31 +1658,31 @@ DefineEngineMethod( GuiTextEditCtrl, getText, const char*, (),,
    if( !object->hasText() )
       return StringTable->insert("");
 
-   char *retBuffer = Con::getReturnBuffer( GuiTextEditCtrl::MAX_STRING_LENGTH );
+   char *retBuffer = Con::getReturnBuffer( ShellTextEditCtrl::MAX_STRING_LENGTH );
    object->getText( retBuffer );
 
    return retBuffer;
 }
 
-DefineEngineMethod( GuiTextEditCtrl, setText, void, (const char* text),,
+DefineEngineMethod( ShellTextEditCtrl, setText, void, (const char* text),,
    "@brief Sets the text in the control.\n\n"
    "@param text Text to place in the control.\n"
    "@tsexample\n"
    "// Define the text to display\n"
    "%text = \"Text!\"\n\n"
-   "// Inform the GuiTextEditCtrl to display the defined text\n"
-   "%thisGuiTextEditCtrl.setText(%text);\n"
+   "// Inform the ShellTextEditCtrl to display the defined text\n"
+   "%thisShellTextEditCtrl.setText(%text);\n"
    "@endtsexample\n\n"
    "@see GuiControl")
 {
    object->setText( text );
 }
 
-DefineEngineMethod( GuiTextEditCtrl, getCursorPos, S32, (),,
+DefineEngineMethod( ShellTextEditCtrl, getCursorPos, S32, (),,
    "@brief Returns the current position of the text cursor in the control.\n\n"
    "@tsexample\n"
    "// Acquire the cursor position in the control\n"
-   "%position = %thisGuiTextEditCtrl.getCursorPost();\n"
+   "%position = %thisShellTextEditCtrl.getCursorPost();\n"
    "@endtsexample\n\n"
    "@return Text cursor position within the control.\n\n"
    "@see GuiControl")
@@ -1690,25 +1690,25 @@ DefineEngineMethod( GuiTextEditCtrl, getCursorPos, S32, (),,
    return( object->getCursorPos() );
 }
 
-DefineEngineMethod( GuiTextEditCtrl, setCursorPos, void, (S32 position),,
+DefineEngineMethod( ShellTextEditCtrl, setCursorPos, void, (S32 position),,
    "@brief Sets the text cursor at the defined position within the control.\n\n"
    "@param position Text position to set the text cursor.\n"
    "@tsexample\n"
    "// Define the cursor position\n"
    "%position = \"12\";\n\n"
-   "// Inform the GuiTextEditCtrl control to place the text cursor at the defined position\n"
-   "%thisGuiTextEditCtrl.setCursorPos(%position);\n"
+   "// Inform the ShellTextEditCtrl control to place the text cursor at the defined position\n"
+   "%thisShellTextEditCtrl.setCursorPos(%position);\n"
    "@endtsexample\n\n"
    "@see GuiControl")
 {
    object->setCursorPos( position );
 }
 
-DefineEngineMethod( GuiTextEditCtrl, isAllTextSelected, bool, (),,
+DefineEngineMethod( ShellTextEditCtrl, isAllTextSelected, bool, (),,
    "@brief Checks to see if all text in the control has been selected.\n\n"
    "@tsexample\n"
    "// Check to see if all text has been selected or not.\n"
-   "%allSelected = %thisGuiTextEditCtrl.isAllTextSelected();\n"
+   "%allSelected = %thisShellTextEditCtrl.isAllTextSelected();\n"
    "@endtsexample\n\n"
    "@return True if all text in the control is selected, otherwise false.\n\n"
    "@see GuiControl")
@@ -1716,33 +1716,33 @@ DefineEngineMethod( GuiTextEditCtrl, isAllTextSelected, bool, (),,
    return object->isAllTextSelected();
 }
 
-DefineEngineMethod( GuiTextEditCtrl, selectAllText, void, (),,
+DefineEngineMethod( ShellTextEditCtrl, selectAllText, void, (),,
    "@brief Selects all text within the control.\n\n"
    "@tsexample\n"
    "// Inform the control to select all of its text.\n"
-   "%thisGuiTextEditCtrl.selectAllText();\n"
+   "%thisShellTextEditCtrl.selectAllText();\n"
    "@endtsexample\n\n"
    "@see GuiControl")
 {
    object->selectAllText();
 }
 
-DefineEngineMethod( GuiTextEditCtrl, clearSelectedText, void, (),,
+DefineEngineMethod( ShellTextEditCtrl, clearSelectedText, void, (),,
    "@brief Unselects all selected text in the control.\n\n"
    "@tsexample\n"
    "// Inform the control to unselect all of its selected text\n"
-   "%thisGuiTextEditCtrl.clearSelectedText();\n"
+   "%thisShellTextEditCtrl.clearSelectedText();\n"
    "@endtsexample\n\n"
    "@see GuiControl")
 {
    object->clearSelectedText();
 }
 
-DefineEngineMethod( GuiTextEditCtrl, forceValidateText, void, (),,
+DefineEngineMethod( ShellTextEditCtrl, forceValidateText, void, (),,
    "@brief Force a validation to occur.\n\n"
    "@tsexample\n"
    "// Inform the control to force a validation of its text.\n"
-   "%thisGuiTextEditCtrl.forceValidateText();\n"
+   "%thisShellTextEditCtrl.forceValidateText();\n"
    "@endtsexample\n\n"
    "@see GuiControl")
 {

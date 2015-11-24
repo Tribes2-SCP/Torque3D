@@ -30,7 +30,7 @@
 #include "gui/core/guiArrayCtrl.h"
 
 
-class GuiTextEditCtrl;
+class ShellTextEditCtrl;
 
 //------------------------------------------------------------------------------
 
@@ -340,7 +340,7 @@ class GuiTreeViewCtrl : public GuiArrayCtrl
       Item* mPossibleRenameItem;
       Item* mRenamingItem;
 		Item* mTempItem;
-      GuiTextEditCtrl* mRenameCtrl;
+      ShellTextEditCtrl* mRenameCtrl;
 
       /// Current filter that determines which items in the tree are displayed and which are hidden.
       String mFilterText;

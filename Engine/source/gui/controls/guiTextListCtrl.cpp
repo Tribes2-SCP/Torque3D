@@ -350,7 +350,7 @@ void GuiTextListCtrl::setSize(Point2I newSize)
    {
       if ( mSize.x == 1 && mFitParentWidth )
       {
-         GuiScrollCtrl* parent = dynamic_cast<GuiScrollCtrl *>(getParent());
+         ShellScrollCtrl* parent = dynamic_cast<ShellScrollCtrl *>(getParent());
          if ( parent )
             mCellSize.x = parent->getContentExtent().x;
       }
@@ -504,7 +504,7 @@ bool GuiTextListCtrl::onKeyDown( const GuiEvent &event )
       break;
    };
 
-   GuiScrollCtrl* parent = dynamic_cast<GuiScrollCtrl *>(getParent());
+   ShellScrollCtrl* parent = dynamic_cast<ShellScrollCtrl *>(getParent());
    if ( parent )
       parent->scrollDelta( 0, yDelta );
 

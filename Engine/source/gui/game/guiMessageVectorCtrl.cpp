@@ -257,7 +257,7 @@ void GuiMessageVectorCtrl::lineInserted(const U32 arg)
 {
    AssertFatal(mMessageVector != NULL, "Should not be here unless we're attached!");
 
-   GuiScrollCtrl* pScroll = dynamic_cast<GuiScrollCtrl*>(getParent());
+   ShellScrollCtrl* pScroll = dynamic_cast<ShellScrollCtrl*>(getParent());
    bool fullyScrolled = pScroll->isScrolledToBottom();
 
    mSpecialMarkers.insert(arg);

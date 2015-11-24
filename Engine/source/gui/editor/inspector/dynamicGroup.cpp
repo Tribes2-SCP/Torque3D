@@ -53,7 +53,7 @@ bool GuiInspectorDynamicGroup::createContent()
    }
 
    // add a button that lets us add new dynamic fields.
-   GuiBitmapButtonCtrl* addFieldBtn = new GuiBitmapButtonCtrl();
+   ShellBitmapButton* addFieldBtn = new ShellBitmapButton();
    {
       SimObject* profilePtr = Sim::findObject("InspectorDynamicFieldButton");
       if( profilePtr != NULL )

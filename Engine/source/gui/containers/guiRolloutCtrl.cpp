@@ -501,7 +501,7 @@ void GuiRolloutCtrl::processTick()
    {
       parent->childResized( this );
       // if our parent's parent is a scroll control, scrollvisible.
-      GuiScrollCtrl* scroll = dynamic_cast<GuiScrollCtrl*>( parent->getParent() );
+      ShellScrollCtrl* scroll = dynamic_cast<ShellScrollCtrl*>( parent->getParent() );
       if ( scroll )
       {
          scroll->scrollRectVisible( getBounds() );

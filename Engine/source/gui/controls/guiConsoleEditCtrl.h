@@ -33,14 +33,14 @@
 #include "gui/containers/guiScrollCtrl.h"
 #endif
 
-class GuiConsoleEditCtrl : public GuiTextEditCtrl
+class GuiConsoleEditCtrl : public ShellTextEditCtrl
 {
 private:
-   typedef GuiTextEditCtrl Parent;
+   typedef ShellTextEditCtrl Parent;
 
 protected:
    bool mUseSiblingScroller;
-   GuiScrollCtrl* mSiblingScroller;
+   ShellScrollCtrl* mSiblingScroller;
 
 public:
    GuiConsoleEditCtrl();

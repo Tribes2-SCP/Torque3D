@@ -104,9 +104,9 @@ void GuiInspector::onDeleteNotify( SimObject *object )
 void GuiInspector::parentResized(const RectI &oldParentRect, const RectI &newParentRect)
 {
    GuiControl *parent = getParent();
-   if ( parent && dynamic_cast<GuiScrollCtrl*>(parent) != NULL )
+   if ( parent && dynamic_cast<ShellScrollCtrl*>(parent) != NULL )
    {
-      GuiScrollCtrl *scroll = dynamic_cast<GuiScrollCtrl*>(parent);
+      ShellScrollCtrl *scroll = dynamic_cast<ShellScrollCtrl*>(parent);
       setWidth( ( newParentRect.extent.x - ( scroll->scrollBarThickness() + 4  ) ) );
    }
    else

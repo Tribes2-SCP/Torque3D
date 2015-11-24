@@ -32,9 +32,9 @@
 #include "gui/core/guiCanvas.h"
 
 
-IMPLEMENT_CONOBJECT( GuiScrollCtrl );
+IMPLEMENT_CONOBJECT( ShellScrollCtrl );
 
-ConsoleDocClass( GuiScrollCtrl,
+ConsoleDocClass( ShellScrollCtrl,
    "@brief A container that allows to view one or more possibly larger controls inside its area by "
       "providing horizontal and/or vertical scroll bars.\n\n"
    
@@ -44,17 +44,17 @@ ConsoleDocClass( GuiScrollCtrl,
 ImplementEnumType( GuiScrollBarBehavior,
    "Display behavior of a scroll bar.  Determines when a scrollbar will be visible.\n\n"
    "@ingroup GuiContainers" )
-   { GuiScrollCtrl::ScrollBarAlwaysOn,     "alwaysOn",   "Always visible." },
-   { GuiScrollCtrl::ScrollBarAlwaysOff,    "alwaysOff",  "Never visible." },
-   { GuiScrollCtrl::ScrollBarDynamic,      "dynamic",    "Only visible when actually needed, i.e. when the child control(s) exceed the visible space on the given axis." },
+   { ShellScrollCtrl::ScrollBarAlwaysOn,     "alwaysOn",   "Always visible." },
+   { ShellScrollCtrl::ScrollBarAlwaysOff,    "alwaysOff",  "Never visible." },
+   { ShellScrollCtrl::ScrollBarDynamic,      "dynamic",    "Only visible when actually needed, i.e. when the child control(s) exceed the visible space on the given axis." },
 EndImplementEnumType;
 
-IMPLEMENT_CALLBACK( GuiScrollCtrl, onScroll, void, (), (),
+IMPLEMENT_CALLBACK( ShellScrollCtrl, onScroll, void, (), (),
    "Called each time the child controls are scrolled by some amount." );
 
 //-----------------------------------------------------------------------------
 
-GuiScrollCtrl::GuiScrollCtrl()
+ShellScrollCtrl::ShellScrollCtrl()
  : mChildMargin( 0, 0 ),
    mBorderThickness( 1 ),
    mScrollBarThickness( 16 ),
@@ -82,23 +82,23 @@ GuiScrollCtrl::GuiScrollCtrl()
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::initPersistFields()
+void ShellScrollCtrl::initPersistFields()
 {
    addGroup( "Scolling" );
    
-      addField( "willFirstRespond",     TypeBool,    Offset(mWillFirstRespond, GuiScrollCtrl));
-      addField( "hScrollBar",           TYPEID< ScrollBarBehavior >(),    Offset(mForceHScrollBar, GuiScrollCtrl),
+      addField( "willFirstRespond",     TypeBool,    Offset(mWillFirstRespond, ShellScrollCtrl));
+      addField( "hScrollBar",           TYPEID< ScrollBarBehavior >(),    Offset(mForceHScrollBar, ShellScrollCtrl),
          "When to display the horizontal scrollbar.");
-      addField( "vScrollBar",           TYPEID< ScrollBarBehavior >(),    Offset(mForceVScrollBar, GuiScrollCtrl),
+      addField( "vScrollBar",           TYPEID< ScrollBarBehavior >(),    Offset(mForceVScrollBar, ShellScrollCtrl),
          "When to display the vertical scrollbar.");
-      addField( "lockHorizScroll",      TypeBool,    Offset(mLockHorizScroll, GuiScrollCtrl),
+      addField( "lockHorizScroll",      TypeBool,    Offset(mLockHorizScroll, ShellScrollCtrl),
          "Horizontal scrolling not allowed if set.");
-      addField( "lockVertScroll",       TypeBool,    Offset(mLockVertScroll, GuiScrollCtrl),
+      addField( "lockVertScroll",       TypeBool,    Offset(mLockVertScroll, ShellScrollCtrl),
          "Vertical scrolling not allowed if set.");
-      addField( "constantThumbHeight",  TypeBool,    Offset(mUseConstantHeightThumb, GuiScrollCtrl));
-      addField( "childMargin",          TypePoint2I, Offset(mChildMargin, GuiScrollCtrl),
+      addField( "constantThumbHeight",  TypeBool,    Offset(mUseConstantHeightThumb, ShellScrollCtrl));
+      addField( "childMargin",          TypePoint2I, Offset(mChildMargin, ShellScrollCtrl),
          "Padding region to put around child contents." );
-      addField( "mouseWheelScrollSpeed", TypeS32,    Offset(mScrollAnimSpeed, GuiScrollCtrl),
+      addField( "mouseWheelScrollSpeed", TypeS32,    Offset(mScrollAnimSpeed, ShellScrollCtrl),
          "Pixels/Tick - if not positive then mousewheel scrolling occurs instantly (like other scrolling).");
       
    endGroup( "Scrolling" );
@@ -108,7 +108,7 @@ void GuiScrollCtrl::initPersistFields()
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::resize(const Point2I &newPos, const Point2I &newExt)
+bool ShellScrollCtrl::resize(const Point2I &newPos, const Point2I &newExt)
 {
    if( !Parent::resize(newPos, newExt) )
       return false;
@@ -119,7 +119,7 @@ bool GuiScrollCtrl::resize(const Point2I &newPos, const Point2I &newExt)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::childResized(GuiControl *child)
+void ShellScrollCtrl::childResized(GuiControl *child)
 {
    if ( mIgnoreChildResized )
       return;
@@ -130,7 +130,7 @@ void GuiScrollCtrl::childResized(GuiControl *child)
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::onWake()
+bool ShellScrollCtrl::onWake()
 {
    if (! Parent::onWake())
       return false;
@@ -157,7 +157,7 @@ bool GuiScrollCtrl::onWake()
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::onSleep()
+void ShellScrollCtrl::onSleep()
 {
    // Reset the mouse tracking state of this control
    //  when it is put to sleep
@@ -170,7 +170,7 @@ void GuiScrollCtrl::onSleep()
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::calcChildExtents()
+bool ShellScrollCtrl::calcChildExtents()
 {
    // scroll control should deal well with multiple gui controls
    if( !size() )
@@ -211,7 +211,7 @@ bool GuiScrollCtrl::calcChildExtents()
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::scrollRectVisible(RectI rect)
+void ShellScrollCtrl::scrollRectVisible(RectI rect)
 {
    // rect is passed in virtual client space
    if(rect.extent.x > mContentExt.x)
@@ -250,7 +250,7 @@ void GuiScrollCtrl::scrollRectVisible(RectI rect)
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::isPointVisible( const Point2I& point )
+bool ShellScrollCtrl::isPointVisible( const Point2I& point )
 {
    return    ( point.x >= mChildRelPos.x && point.x <= ( mChildRelPos.x + mContentExt.x ) )
           && ( point.y >= mChildRelPos.y && point.y <= ( mChildRelPos.y + mContentExt.y ) );
@@ -258,7 +258,7 @@ bool GuiScrollCtrl::isPointVisible( const Point2I& point )
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::isRectCompletelyVisible(const RectI& rect)
+bool ShellScrollCtrl::isRectCompletelyVisible(const RectI& rect)
 {
    // rect is passed in virtual client space
    // Determine the points bounding the requested rectangle
@@ -286,7 +286,7 @@ bool GuiScrollCtrl::isRectCompletelyVisible(const RectI& rect)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::addObject(SimObject *object)
+void ShellScrollCtrl::addObject(SimObject *object)
 {
    Parent::addObject(object);
    computeSizes();
@@ -294,7 +294,7 @@ void GuiScrollCtrl::addObject(SimObject *object)
 
 //-----------------------------------------------------------------------------
 
-GuiControl* GuiScrollCtrl::findHitControl(const Point2I &pt, S32 initialLayer)
+GuiControl* ShellScrollCtrl::findHitControl(const Point2I &pt, S32 initialLayer)
 {
    if(pt.x < mProfile->mBorderThickness || pt.y < mProfile->mBorderThickness)
       return this;
@@ -306,7 +306,7 @@ GuiControl* GuiScrollCtrl::findHitControl(const Point2I &pt, S32 initialLayer)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::computeSizes()
+void ShellScrollCtrl::computeSizes()
 {
    S32 thickness = (mProfile ? mProfile->mBorderThickness : 1);
    Point2I borderExtent(thickness, thickness);
@@ -424,7 +424,7 @@ void GuiScrollCtrl::computeSizes()
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::calcScrollRects(void)
+void ShellScrollCtrl::calcScrollRects(void)
 {
    S32 thickness = ( mProfile ? mProfile->mBorderThickness : 1 );
    if (mHasHScrollBar)
@@ -462,7 +462,7 @@ void GuiScrollCtrl::calcScrollRects(void)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::calcThumbs()
+void ShellScrollCtrl::calcThumbs()
 {
    if (mHBarEnabled && mChildExt.x > 0)
    {
@@ -490,7 +490,7 @@ void GuiScrollCtrl::calcThumbs()
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::scrollDelta(S32 deltaX, S32 deltaY)
+void ShellScrollCtrl::scrollDelta(S32 deltaX, S32 deltaY)
 {
    scrollTo(mChildRelPos.x + deltaX, mChildRelPos.y + deltaY);
 
@@ -499,7 +499,7 @@ void GuiScrollCtrl::scrollDelta(S32 deltaX, S32 deltaY)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::scrollDeltaAnimate(S32 x, S32 y)
+void ShellScrollCtrl::scrollDeltaAnimate(S32 x, S32 y)
 {
    if ( !size() )
       return;
@@ -519,7 +519,7 @@ void GuiScrollCtrl::scrollDeltaAnimate(S32 x, S32 y)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::scrollTo(S32 x, S32 y)
+void ShellScrollCtrl::scrollTo(S32 x, S32 y)
 {
    if( !size() )
       return;
@@ -554,14 +554,14 @@ void GuiScrollCtrl::scrollTo(S32 x, S32 y)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::scrollToObject(GuiControl *targetControl)
+void ShellScrollCtrl::scrollToObject(GuiControl *targetControl)
 {
 	bool        isValidChild     = false;
 	Point2I     relativePosition = targetControl->getPosition();
 	GuiControl* parentControl    = targetControl->getParent();
 	while (parentControl)
 	{
-		GuiScrollCtrl* scrollControl = dynamic_cast<GuiScrollCtrl*>(parentControl);
+		ShellScrollCtrl* scrollControl = dynamic_cast<ShellScrollCtrl*>(parentControl);
 		if (scrollControl == this)
 		{
 			relativePosition += scrollControl->getChildRelPos();
@@ -579,13 +579,13 @@ void GuiScrollCtrl::scrollToObject(GuiControl *targetControl)
 	}
 	else
 	{
-		Con::errorf("GuiScrollCtrl::scrollToObject() - Specified object is not a child of this scroll control (%d)!", targetControl->getId());
+		Con::errorf("ShellScrollCtrl::scrollToObject() - Specified object is not a child of this scroll control (%d)!", targetControl->getId());
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-GuiScrollCtrl::Region GuiScrollCtrl::findHitRegion(const Point2I &pt)
+ShellScrollCtrl::Region ShellScrollCtrl::findHitRegion(const Point2I &pt)
 {
    if (mVBarEnabled && mHasVScrollBar)
    {
@@ -624,14 +624,14 @@ GuiScrollCtrl::Region GuiScrollCtrl::findHitRegion(const Point2I &pt)
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::wantsTabListMembership()
+bool ShellScrollCtrl::wantsTabListMembership()
 {
    return true;
 }
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::loseFirstResponder()
+bool ShellScrollCtrl::loseFirstResponder()
 {
    setUpdate();
    return true;
@@ -639,7 +639,7 @@ bool GuiScrollCtrl::loseFirstResponder()
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::becomeFirstResponder()
+bool ShellScrollCtrl::becomeFirstResponder()
 {
    setUpdate();
    return mWillFirstRespond;
@@ -647,7 +647,7 @@ bool GuiScrollCtrl::becomeFirstResponder()
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::onKeyDown(const GuiEvent &event)
+bool ShellScrollCtrl::onKeyDown(const GuiEvent &event)
 {
    if (mWillFirstRespond)
    {
@@ -686,7 +686,7 @@ bool GuiScrollCtrl::onKeyDown(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::_onMouseDown( const GuiEvent &event, bool lockMouse )
+void ShellScrollCtrl::_onMouseDown( const GuiEvent &event, bool lockMouse )
 {
    if( lockMouse )
    {
@@ -718,14 +718,14 @@ void GuiScrollCtrl::_onMouseDown( const GuiEvent &event, bool lockMouse )
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::onMouseDown(const GuiEvent &event)
+void ShellScrollCtrl::onMouseDown(const GuiEvent &event)
 {
    _onMouseDown( event, true );
 }
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::onMouseDownEditor( const GuiEvent& event, Point2I offset )
+bool ShellScrollCtrl::onMouseDownEditor( const GuiEvent& event, Point2I offset )
 {
    // If ALT is pressed while clicking on a horizontal or vertical scrollbar,
    // do a scroll.
@@ -745,7 +745,7 @@ bool GuiScrollCtrl::onMouseDownEditor( const GuiEvent& event, Point2I offset )
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::onMouseUp(const GuiEvent &)
+void ShellScrollCtrl::onMouseUp(const GuiEvent &)
 {
    mouseUnlock();
 
@@ -757,7 +757,7 @@ void GuiScrollCtrl::onMouseUp(const GuiEvent &)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::onMouseDragged(const GuiEvent &event)
+void ShellScrollCtrl::onMouseDragged(const GuiEvent &event)
 {
    Point2I curMousePos = globalToLocalCoord(event.mousePoint);
    setUpdate();
@@ -819,7 +819,7 @@ void GuiScrollCtrl::onMouseDragged(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::onMouseWheelUp(const GuiEvent &event)
+bool ShellScrollCtrl::onMouseWheelUp(const GuiEvent &event)
 {
    if ( !mAwake || !mVisible )
       return false;
@@ -831,7 +831,7 @@ bool GuiScrollCtrl::onMouseWheelUp(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-bool GuiScrollCtrl::onMouseWheelDown(const GuiEvent &event)
+bool ShellScrollCtrl::onMouseWheelDown(const GuiEvent &event)
 {
    if ( !mAwake || !mVisible )
       return false;
@@ -843,7 +843,7 @@ bool GuiScrollCtrl::onMouseWheelDown(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::updateChildMousePos()
+void ShellScrollCtrl::updateChildMousePos()
 {      
    // We pass a fake GuiEvent to child controls onMouseMove
    // since although the mouse has not moved 'they' have.
@@ -866,7 +866,7 @@ void GuiScrollCtrl::updateChildMousePos()
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::onPreRender()
+void ShellScrollCtrl::onPreRender()
 {
    Parent::onPreRender();
 
@@ -954,7 +954,7 @@ void GuiScrollCtrl::onPreRender()
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::scrollByRegion(Region reg)
+void ShellScrollCtrl::scrollByRegion(Region reg)
 {
    setUpdate();
    if(!size())
@@ -1020,7 +1020,7 @@ void GuiScrollCtrl::scrollByRegion(Region reg)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::scrollByMouseWheel( const GuiEvent &event )
+void ShellScrollCtrl::scrollByMouseWheel( const GuiEvent &event )
 {
    setUpdate();
    if ( !size() )
@@ -1034,7 +1034,7 @@ void GuiScrollCtrl::scrollByMouseWheel( const GuiEvent &event )
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::onRender(Point2I offset, const RectI &updateRect)
+void ShellScrollCtrl::onRender(Point2I offset, const RectI &updateRect)
 {
    // draw content controls
    // create a rect to intersect with the updateRect
@@ -1065,13 +1065,13 @@ void GuiScrollCtrl::onRender(Point2I offset, const RectI &updateRect)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::drawBorder( const Point2I &offset, bool /*isFirstResponder*/ )
+void ShellScrollCtrl::drawBorder( const Point2I &offset, bool /*isFirstResponder*/ )
 {
 }
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::drawVScrollBar(const Point2I &offset)
+void ShellScrollCtrl::drawVScrollBar(const Point2I &offset)
 {
     if ( mTextureObject.isNull() )
     {
@@ -1196,7 +1196,7 @@ void GuiScrollCtrl::drawVScrollBar(const Point2I &offset)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::drawHScrollBar(const Point2I &offset)
+void ShellScrollCtrl::drawHScrollBar(const Point2I &offset)
 {
     if ( mTextureObject.isNull() )
     {
@@ -1321,7 +1321,7 @@ void GuiScrollCtrl::drawHScrollBar(const Point2I &offset)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::drawScrollCorner(const Point2I &offset)
+void ShellScrollCtrl::drawScrollCorner(const Point2I &offset)
 {
    Point2I pos = offset;
    pos.x += mRightArrowRect.point.x + mRightArrowRect.extent.x - 1;
@@ -1332,7 +1332,7 @@ void GuiScrollCtrl::drawScrollCorner(const Point2I &offset)
 
 //-----------------------------------------------------------------------------
 
-void GuiScrollCtrl::autoScroll(Region reg)
+void ShellScrollCtrl::autoScroll(Region reg)
 {
    scrollByRegion(reg);
 }
@@ -1344,7 +1344,7 @@ void GuiScrollCtrl::autoScroll(Region reg)
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, scrollToTop, void, (),,
+DefineEngineMethod( ShellScrollCtrl, scrollToTop, void, (),,
    "Scroll all the way to the top of the vertical and left of the horizontal scrollbar." )
 {
    object->scrollTo( 0, 0 );
@@ -1352,7 +1352,7 @@ DefineEngineMethod( GuiScrollCtrl, scrollToTop, void, (),,
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, scrollToBottom, void, (),,
+DefineEngineMethod( ShellScrollCtrl, scrollToBottom, void, (),,
    "Scroll all the way to the bottom of the vertical scrollbar and the left of the horizontal bar." )
 {
    object->scrollTo( 0, 0x7FFFFFFF );
@@ -1360,7 +1360,7 @@ DefineEngineMethod( GuiScrollCtrl, scrollToBottom, void, (),,
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, setScrollPosition, void, ( S32 x, S32 y ),,
+DefineEngineMethod( ShellScrollCtrl, setScrollPosition, void, ( S32 x, S32 y ),,
    "Set the position of the scrolled content.\n\n"
    "@param x Position on X axis.\n"
    "@param y Position on y axis.\n" )
@@ -1370,7 +1370,7 @@ DefineEngineMethod( GuiScrollCtrl, setScrollPosition, void, ( S32 x, S32 y ),,
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, scrollToObject, void, ( GuiControl* control ),,
+DefineEngineMethod( ShellScrollCtrl, scrollToObject, void, ( GuiControl* control ),,
    "Scroll the control so that the given child @a control is visible.\n\n"
    "@param control A child control." )
 {
@@ -1380,7 +1380,7 @@ DefineEngineMethod( GuiScrollCtrl, scrollToObject, void, ( GuiControl* control )
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, getScrollPosition, Point2I, (),,
+DefineEngineMethod( ShellScrollCtrl, getScrollPosition, Point2I, (),,
    "Get the current coordinates of the scrolled content.\n\n"
    "@return The current position of the scrolled content." )
 {
@@ -1389,7 +1389,7 @@ DefineEngineMethod( GuiScrollCtrl, getScrollPosition, Point2I, (),,
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, getScrollPositionX, S32, (),,
+DefineEngineMethod( ShellScrollCtrl, getScrollPositionX, S32, (),,
    "Get the current X coordinate of the scrolled content.\n\n"
    "@return The current X coordinate of the scrolled content." )
 {
@@ -1398,7 +1398,7 @@ DefineEngineMethod( GuiScrollCtrl, getScrollPositionX, S32, (),,
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, getScrollPositionY, S32, (),,
+DefineEngineMethod( ShellScrollCtrl, getScrollPositionY, S32, (),,
    "Get the current Y coordinate of the scrolled content."
    "@return The current Y coordinate of the scrolled content." )
 {
@@ -1407,7 +1407,7 @@ DefineEngineMethod( GuiScrollCtrl, getScrollPositionY, S32, (),,
 
 //-----------------------------------------------------------------------------
 
-DefineEngineMethod( GuiScrollCtrl, computeSizes, void, (),,
+DefineEngineMethod( ShellScrollCtrl, computeSizes, void, (),,
    "Refresh sizing and positioning of child controls." )
 {
    object->computeSizes();

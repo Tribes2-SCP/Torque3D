@@ -216,7 +216,7 @@ bool GuiInspectorDynamicField::onAdd()
    //pushObjectToBack(mEdit);
 
    // Create our renaming field
-   mRenameCtrl = new GuiTextEditCtrl();
+   mRenameCtrl = new ShellTextEditCtrl();
    mRenameCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorDynamicFieldProfile" );
 
    char szName[512];
@@ -245,7 +245,7 @@ bool GuiInspectorDynamicField::onAdd()
    mCaption = StringTable->insert( "" );
 
    // Create delete button control
-   mDeleteButton = new GuiBitmapButtonCtrl();
+   mDeleteButton = new ShellBitmapButton();
 
 	SimObject* profilePtr = Sim::findObject("InspectorDynamicFieldButton");
    if( profilePtr != NULL )

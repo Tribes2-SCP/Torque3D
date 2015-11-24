@@ -200,7 +200,7 @@ void GuiInspectorTypeMaterialName::consoleInit()
 
 GuiControl* GuiInspectorTypeMaterialName::construct(const char* command)
 {
-   GuiControl* retCtrl = new GuiTextEditCtrl();
+   GuiControl* retCtrl = new ShellTextEditCtrl();
 
    retCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditProfile" );
 
@@ -212,7 +212,7 @@ GuiControl* GuiInspectorTypeMaterialName::construct(const char* command)
    retCtrl->setField("Validate", szBuffer );
 
    //return retCtrl;
-   mBrowseButton = new GuiBitmapButtonCtrl();
+   mBrowseButton = new ShellBitmapButton();
 
    RectI browseRect( Point2I( ( getLeft() + getWidth()) - 26, getTop() + 2), Point2I(20, getHeight() - 4) );
 
@@ -306,7 +306,7 @@ void GuiInspectorTypeTerrainMaterialName::consoleInit()
 
 GuiControl* GuiInspectorTypeTerrainMaterialName::construct(const char* command)
 {
-	GuiControl* retCtrl = new GuiTextEditCtrl();
+	GuiControl* retCtrl = new ShellTextEditCtrl();
 
    retCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditProfile" );
 
@@ -318,7 +318,7 @@ GuiControl* GuiInspectorTypeTerrainMaterialName::construct(const char* command)
    retCtrl->setField("Validate", szBuffer );
 
    //return retCtrl;
-   mBrowseButton = new GuiBitmapButtonCtrl();
+   mBrowseButton = new ShellBitmapButton();
 
    RectI browseRect( Point2I( ( getLeft() + getWidth()) - 26, getTop() + 2), Point2I(20, getHeight() - 4) );
 
@@ -467,7 +467,7 @@ void GuiInspectorTypeFileName::consoleInit()
 
 GuiControl* GuiInspectorTypeFileName::constructEditControl()
 {
-   GuiControl* retCtrl = new GuiTextEditCtrl();
+   GuiControl* retCtrl = new ShellTextEditCtrl();
 
    // Let's make it look pretty.
    retCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditRightProfile" );
@@ -745,7 +745,7 @@ GuiControl* GuiInspectorTypeShapeFilename::constructEditControl()
    mBrowseButton->setField( "Command", szBuffer );
 
    // Create "Open in ShapeEditor" button
-   mShapeEdButton = new GuiBitmapButtonCtrl();
+   mShapeEdButton = new ShellBitmapButton();
 
    dSprintf(szBuffer, sizeof(szBuffer), "ShapeEditorPlugin.open(%d.getText());", retCtrl->getId());
    mShapeEdButton->setField("Command", szBuffer);
@@ -882,7 +882,7 @@ void GuiInspectorTypeRectUV::consoleInit()
 
 GuiControl* GuiInspectorTypeRectUV::constructEditControl()
 {
-   GuiControl* retCtrl = new GuiTextEditCtrl();
+   GuiControl* retCtrl = new ShellTextEditCtrl();
 
    retCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditProfile" );
 
@@ -894,7 +894,7 @@ GuiControl* GuiInspectorTypeRectUV::constructEditControl()
    retCtrl->setField("Validate", szBuffer );
 
    //return retCtrl;
-   mBrowseButton = new GuiBitmapButtonCtrl();
+   mBrowseButton = new ShellBitmapButton();
 
    RectI browseRect( Point2I( ( getLeft() + getWidth()) - 26, getTop() + 2), Point2I(20, getHeight() - 4) );
 
@@ -964,7 +964,7 @@ void GuiInspectorTypeEaseF::consoleInit()
 
 GuiControl* GuiInspectorTypeEaseF::constructEditControl()
 {
-   GuiControl* retCtrl = new GuiTextEditCtrl();
+   GuiControl* retCtrl = new ShellTextEditCtrl();
 
    // Let's make it look pretty.
    retCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditProfile" );
@@ -1048,7 +1048,7 @@ ConsoleDocClass( GuiInspectorTypeColor,
 
 GuiControl* GuiInspectorTypeColor::constructEditControl()
 {
-   GuiControl* retCtrl = new GuiTextEditCtrl();
+   GuiControl* retCtrl = new ShellTextEditCtrl();
 
    // Let's make it look pretty.
    retCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditProfile" );
@@ -1473,7 +1473,7 @@ ConsoleDocClass( GuiInspectorTypeBitMask32Helper,
 
 GuiControl* GuiInspectorTypeBitMask32Helper::constructEditControl()
 {
-   GuiControl *retCtrl = new GuiTextEditCtrl();
+   GuiControl *retCtrl = new ShellTextEditCtrl();
    retCtrl->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditProfile" );
    retCtrl->setField( "hexDisplay", "true" );
 
@@ -1484,7 +1484,7 @@ GuiControl* GuiInspectorTypeBitMask32Helper::constructEditControl()
    retCtrl->setField( "AltCommand", szBuffer );
    retCtrl->setField( "Validate", szBuffer );
 
-   mButton = new GuiBitmapButtonCtrl();
+   mButton = new ShellBitmapButton();
 
    RectI browseRect( Point2I( ( getLeft() + getWidth()) - 26, getTop() + 2), Point2I(20, getHeight() - 4) );
    dSprintf( szBuffer, 512, "%d.toggleExpanded(false);", mParentRollout->getId() );
@@ -1539,7 +1539,7 @@ bool GuiInspectorTypeBitMask32Helper::updateRects()
 
 void GuiInspectorTypeBitMask32Helper::setValue( StringTableEntry newValue )
 {
-   GuiTextEditCtrl *edit = dynamic_cast<GuiTextEditCtrl*>(mEdit);
+   ShellTextEditCtrl *edit = dynamic_cast<ShellTextEditCtrl*>(mEdit);
    edit->setText( newValue );
 }
 

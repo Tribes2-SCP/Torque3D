@@ -48,7 +48,7 @@
 /// (from the GuiControlProfile) that contains two images - the first is
 /// displayed when the control is expanded and the second is displayed when
 /// it is collapsed. The header is sized based off of the first image.
-class GuiPaneControl : public GuiControl
+class ShellPaneCtrl : public GuiControl
 {
    public:
    
@@ -85,7 +85,7 @@ class GuiPaneControl : public GuiControl
 
    public:
    
-      GuiPaneControl();
+      ShellPaneCtrl();
 
       /// Return whether the pane is currently collapsed.
       bool getCollapsed() { return mCollapsed; };
@@ -110,7 +110,7 @@ class GuiPaneControl : public GuiControl
 
       static void initPersistFields();
       
-      DECLARE_CONOBJECT(GuiPaneControl);
+      DECLARE_CONOBJECT(ShellPaneCtrl);
       DECLARE_CATEGORY( "Gui Containers" );
       DECLARE_DESCRIPTION( "A container that wraps a single child control displaying a header\n"
          "with a caption above it.  If enabled, the pane can be collapsed and expanded\n"

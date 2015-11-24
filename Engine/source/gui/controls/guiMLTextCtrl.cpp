@@ -649,7 +649,7 @@ void GuiMLTextCtrl::ensureCursorOnScreen()
    // If our parent isn't a scroll control, or we're not the only control
    //  in the content region, bail...
    GuiControl* pParent = getParent();
-	GuiScrollCtrl *sc = dynamic_cast<GuiScrollCtrl*>(pParent);
+	ShellScrollCtrl *sc = dynamic_cast<ShellScrollCtrl*>(pParent);
 	if(!sc)
 		return;
 
@@ -1001,7 +1001,7 @@ void GuiMLTextCtrl::clearSelection()
 void GuiMLTextCtrl::scrollToTag( U32 id )
 {
    // If the parent control is not a GuiScrollContentCtrl, then this call is invalid:
-   GuiScrollCtrl *pappy = dynamic_cast<GuiScrollCtrl*>(getParent());
+   ShellScrollCtrl *pappy = dynamic_cast<ShellScrollCtrl*>(getParent());
    if ( !pappy )
       return;
 
@@ -1025,7 +1025,7 @@ void GuiMLTextCtrl::scrollToTag( U32 id )
 void GuiMLTextCtrl::scrollToTop()
 {
    // If the parent control is not a GuiScrollContentCtrl, then this call is invalid:
-   GuiScrollCtrl *pappy = dynamic_cast<GuiScrollCtrl*>(getParent());
+   ShellScrollCtrl *pappy = dynamic_cast<ShellScrollCtrl*>(getParent());
    if ( !pappy )
       return;
 	pappy->scrollRectVisible(RectI(0,0,0,0));
@@ -1035,7 +1035,7 @@ void GuiMLTextCtrl::scrollToTop()
 void GuiMLTextCtrl::scrollToBottom()
 {
    // If the parent control is not a GuiScrollContentCtrl, then this call is invalid:
-   GuiScrollCtrl *pappy = dynamic_cast<GuiScrollCtrl*>(getParent());
+   ShellScrollCtrl *pappy = dynamic_cast<ShellScrollCtrl*>(getParent());
    if ( !pappy )
       return;
 

@@ -69,7 +69,7 @@ public:
    DECLARE_CONOBJECT( GuiFileTreeCtrl );
    DECLARE_DESCRIPTION( "A control that displays a hierarchical tree view of a path in the game file system.\n"
                         "Note that to enable expanding/collapsing of directories, the control must be\n"
-                        "placed inside a GuiScrollCtrl." );
+                        "placed inside a ShellScrollCtrl." );
 
    static void initPersistFields();
 };

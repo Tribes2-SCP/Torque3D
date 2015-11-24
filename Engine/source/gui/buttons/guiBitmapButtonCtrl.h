@@ -49,7 +49,7 @@
 /// To implement different handlers for the modifier states, use the "onDefaultClick",
 /// "onCtrlClick", "onAltClick", and "onShiftClick" methods.
 ///
-class GuiBitmapButtonCtrl : public GuiButtonCtrl
+class ShellBitmapButton : public GuiButtonCtrl
 {
    public:
    
@@ -148,7 +148,7 @@ class GuiBitmapButtonCtrl : public GuiButtonCtrl
 
    public:
                            
-      GuiBitmapButtonCtrl();
+      ShellBitmapButton();
 
       void setAutoFitExtents( bool state );
       void setBitmap( const String& name );
@@ -164,20 +164,20 @@ class GuiBitmapButtonCtrl : public GuiButtonCtrl
 
       static void initPersistFields();
 
-      DECLARE_CONOBJECT(GuiBitmapButtonCtrl);
+      DECLARE_CONOBJECT(ShellBitmapButton);
       DECLARE_DESCRIPTION( "A button control rendered entirely from bitmaps.\n"
                            "The individual button states are represented with separate bitmaps." );
 };
 
-typedef GuiBitmapButtonCtrl::BitmapMode GuiBitmapMode;
+typedef ShellBitmapButton::BitmapMode GuiBitmapMode;
 DefineEnumType( GuiBitmapMode );
 
-/// Extension of GuiBitmapButtonCtrl that also display a text label on the button.
-class GuiBitmapButtonTextCtrl : public GuiBitmapButtonCtrl
+/// Extension of ShellBitmapButton that also display a text label on the button.
+class GuiBitmapButtonTextCtrl : public ShellBitmapButton
 {
    public:
    
-      typedef GuiBitmapButtonCtrl Parent;
+      typedef ShellBitmapButton Parent;
       
    protected:
    
@@ -186,7 +186,7 @@ class GuiBitmapButtonTextCtrl : public GuiBitmapButtonCtrl
    public:
 
       DECLARE_CONOBJECT( GuiBitmapButtonTextCtrl );
-      DECLARE_DESCRIPTION( "An extension of GuiBitmapButtonCtrl that also renders a text\n"
+      DECLARE_DESCRIPTION( "An extension of ShellBitmapButton that also renders a text\n"
                            "label on the button." );
 };
 

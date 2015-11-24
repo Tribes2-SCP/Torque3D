@@ -42,7 +42,7 @@ ConsoleDocClass( GuiButtonBaseCtrl,
    "- GuiRadioCtrl (radio buttons)\n"
    "- GuiCheckBoxCtrl (checkboxes)\n"
    "- GuiButtonCtrl (push buttons with text labels)\n"
-   "- GuiBitmapButtonCtrl (bitmapped buttons)\n"
+   "- ShellBitmapButton (bitmapped buttons)\n"
    "- GuiBitmapButtonTextCtrl (bitmapped buttons with a text label)\n"
    "- GuiToggleButtonCtrl (toggle buttons, i.e. push buttons with \"sticky\" behavior)\n"
    "- GuiSwatchButtonCtrl (color swatch buttons)\n"

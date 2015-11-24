@@ -443,9 +443,9 @@ void GuiControlProfile::initPersistFields()
       addField("autoSizeHeight",TypeBool,       Offset(mAutoSizeHeight, GuiControlProfile),
          "Automatically adjust height of control to fit contents." );
       addField("returnTab",     TypeBool,       Offset(mReturnTab, GuiControlProfile),
-         "Whether to add automatic tab event when return is pressed so focus moves on to next control (GuiTextEditCtrl)." );
+         "Whether to add automatic tab event when return is pressed so focus moves on to next control (ShellTextEditCtrl)." );
       addField("numbersOnly",   TypeBool,       Offset(mNumbersOnly, GuiControlProfile),
-         "Whether control should only accept numerical data (GuiTextEditCtrl)." );
+         "Whether control should only accept numerical data (ShellTextEditCtrl)." );
       addField("cursorColor",   TypeColorI,     Offset(mCursorColor, GuiControlProfile),
          "Color to use for the text cursor." );
 

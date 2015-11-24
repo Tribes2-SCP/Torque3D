@@ -111,7 +111,7 @@ void GuiConsole::onPreRender()
    {
       //first, find out if the console was scrolled up
       bool scrolled = false;
-      GuiScrollCtrl *parent = dynamic_cast<GuiScrollCtrl*>(getParent());
+      ShellScrollCtrl *parent = dynamic_cast<ShellScrollCtrl*>(getParent());
 
       if(parent)
          scrolled = parent->isScrolledToBottom();

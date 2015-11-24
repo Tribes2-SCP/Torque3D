@@ -35,24 +35,24 @@
 ImplementEnumType( GuiBitmapMode,
    "Rendering behavior when placing bitmaps in controls.\n\n"
    "@ingroup GuiImages" )
-   { GuiBitmapButtonCtrl::BitmapStretched, "Stretched", "Stretch bitmap to fit control extents." },
-   { GuiBitmapButtonCtrl::BitmapCentered, "Centered", "Center bitmap in control."  },
+   { ShellBitmapButton::BitmapStretched, "Stretched", "Stretch bitmap to fit control extents." },
+   { ShellBitmapButton::BitmapCentered, "Centered", "Center bitmap in control."  },
 EndImplementEnumType;
 
 
 //=============================================================================
-//    GuiBitmapButtonCtrl
+//    ShellBitmapButton
 //=============================================================================
 
-IMPLEMENT_CONOBJECT(GuiBitmapButtonCtrl);
+IMPLEMENT_CONOBJECT(ShellBitmapButton);
 
-ConsoleDocClass( GuiBitmapButtonCtrl,
+ConsoleDocClass( ShellBitmapButton,
    "@brief A button that renders its various states (mouse over, pushed, etc.) from separate bitmaps.\n\n"
    
    "A bitmapped button is a push button that uses one or more texture images for rendering its individual states.\n\n"
    
    "To find the individual textures associated with the button, a naming scheme is used.  For each state "
-   "a suffix is appended to the texture file name given in the GuiBitmapButtonCtrl::bitmap field:\n"
+   "a suffix is appended to the texture file name given in the ShellBitmapButton::bitmap field:\n"
    
    "- \"_n\": Normal state.  This one will be active when no other state applies.\n"
    "- \"_h\": Highlighted state.  This applies when the mouse is hovering over the button.\n"
@@ -65,7 +65,7 @@ ConsoleDocClass( GuiBitmapButtonCtrl,
 
    "@section guibitmapbutton_modifiers Per-Modifier Button Actions\n"
    
-   "If GuiBitmapButtonCtrl::useModifiers is set to true, per-modifier button actions and textures are enabled.  This functionality "
+   "If ShellBitmapButton::useModifiers is set to true, per-modifier button actions and textures are enabled.  This functionality "
    "allows to associate different images and different actions with a button depending on which modifiers are pressed "
    "on the keyboard by the user.\n\n"
    
@@ -91,7 +91,7 @@ ConsoleDocClass( GuiBitmapButtonCtrl,
    
    "@tsexample\n"
    "// Create an OK button that will trigger an onOk() call on its parent when clicked:\n"
-   "%okButton = new GuiBitmapButtonCtrl()\n"
+   "%okButton = new ShellBitmapButton()\n"
    "{\n"
    "   bitmap = \"art/gui/okButton\";\n"
    "   autoFitExtents = true;\n"
@@ -102,22 +102,22 @@ ConsoleDocClass( GuiBitmapButtonCtrl,
    "@ingroup GuiButtons"
 );
 
-IMPLEMENT_CALLBACK( GuiBitmapButtonCtrl, onDefaultClick, void, (), (),
+IMPLEMENT_CALLBACK( ShellBitmapButton, onDefaultClick, void, (), (),
    "Called when per-modifier functionality is enabled and the user clicks on the button without any modifier pressed.\n"
    "@ref guibitmapbutton_modifiers" );
-IMPLEMENT_CALLBACK( GuiBitmapButtonCtrl, onCtrlClick, void, (), (),
+IMPLEMENT_CALLBACK( ShellBitmapButton, onCtrlClick, void, (), (),
    "Called when per-modifier functionality is enabled and the user clicks on the button with the CTRL key pressed.\n"
    "@ref guibitmapbutton_modifiers" );
-IMPLEMENT_CALLBACK( GuiBitmapButtonCtrl, onAltClick, void, (), (),
+IMPLEMENT_CALLBACK( ShellBitmapButton, onAltClick, void, (), (),
    "Called when per-modifier functionality is enabled and the user clicks on the button with the ALT key pressed.\n"
    "@ref guibitmapbutton_modifiers" );
-IMPLEMENT_CALLBACK( GuiBitmapButtonCtrl, onShiftClick, void, (), (),
+IMPLEMENT_CALLBACK( ShellBitmapButton, onShiftClick, void, (), (),
    "Called when per-modifier functionality is enabled and the user clicks on the button with the SHIFT key pressed.\n"
    "@ref guibitmapbutton_modifiers" );
 
 //-----------------------------------------------------------------------------
 
-GuiBitmapButtonCtrl::GuiBitmapButtonCtrl()
+ShellBitmapButton::ShellBitmapButton()
 {
    mBitmapMode = BitmapStretched;
    mAutoFitExtents = false;
@@ -128,31 +128,31 @@ GuiBitmapButtonCtrl::GuiBitmapButtonCtrl()
 
 //-----------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::initPersistFields()
+void ShellBitmapButton::initPersistFields()
 {
    addGroup( "Bitmap" );
    
-      addProtectedField( "bitmap", TypeStringFilename, Offset( mBitmapName, GuiBitmapButtonCtrl ),
+      addProtectedField( "bitmap", TypeStringFilename, Offset( mBitmapName, ShellBitmapButton ),
          &_setBitmap, &defaultProtectedGetFn,
          "Texture file to display on this button.\n"
          "If useStates is false, this will be the file that renders on the control.  Otherwise, this will "
          "specify the default texture name to which the various state and modifier suffixes are appended "
          "to find the per-state and per-modifier (if enabled) textures." );
-      addField( "bitmapMode", TYPEID< BitmapMode >(), Offset( mBitmapMode, GuiBitmapButtonCtrl ),
+      addField( "bitmapMode", TYPEID< BitmapMode >(), Offset( mBitmapMode, ShellBitmapButton ),
          "Behavior for fitting the bitmap to the control extents.\n"
          "If set to 'Stretched', the bitmap will be stretched both verticall and horizontally to fit inside "
          "the control's extents.\n\n"
          "If set to 'Centered', the bitmap will stay at its original resolution centered in the control's "
          "rectangle (getting clipped if the control is smaller than the texture)." );
-      addProtectedField( "autoFitExtents", TypeBool, Offset( mAutoFitExtents, GuiBitmapButtonCtrl ),
+      addProtectedField( "autoFitExtents", TypeBool, Offset( mAutoFitExtents, ShellBitmapButton ),
          &_setAutoFitExtents, &defaultProtectedGetFn,
          "If true, the control's extents will be set to match the bitmap's extents when setting the bitmap.\n"
          "The bitmap extents will always be taken from the default/normal bitmap (in case the extents of the various "
          "bitmaps do not match up.)" );
-      addField( "useModifiers", TypeBool, Offset( mUseModifiers, GuiBitmapButtonCtrl ),
+      addField( "useModifiers", TypeBool, Offset( mUseModifiers, ShellBitmapButton ),
          "If true, per-modifier button functionality is enabled.\n"
          "@ref guibitmapbutton_modifiers" );
-      addField( "useStates", TypeBool, Offset( mUseStates, GuiBitmapButtonCtrl ),
+      addField( "useStates", TypeBool, Offset( mUseStates, ShellBitmapButton ),
          "If true, per-mouse state button functionality is enabled.\n"
          "Defaults to true.\n\n"
          "If you do not use per-state images on this button set this to false to speed up the loading process "
@@ -165,7 +165,7 @@ void GuiBitmapButtonCtrl::initPersistFields()
 
 //-----------------------------------------------------------------------------
 
-bool GuiBitmapButtonCtrl::onWake()
+bool ShellBitmapButton::onWake()
 {
    if (! Parent::onWake())
       return false;
@@ -178,7 +178,7 @@ bool GuiBitmapButtonCtrl::onWake()
 
 //-----------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::onSleep()
+void ShellBitmapButton::onSleep()
 {
    if( dStricmp(mBitmapName, "texhandle") != 0 )
       for( U32 i = 0; i < NumModifiers; ++ i )
@@ -194,18 +194,18 @@ void GuiBitmapButtonCtrl::onSleep()
 
 //-----------------------------------------------------------------------------
 
-bool GuiBitmapButtonCtrl::_setAutoFitExtents( void *object, const char *index, const char *data )
+bool ShellBitmapButton::_setAutoFitExtents( void *object, const char *index, const char *data )
 {
-   GuiBitmapButtonCtrl* ctrl = reinterpret_cast< GuiBitmapButtonCtrl* >( object );
+   ShellBitmapButton* ctrl = reinterpret_cast< ShellBitmapButton* >( object );
    ctrl->setAutoFitExtents( dAtob( data ) );
    return false;
 }
 
 //-----------------------------------------------------------------------------
 
-bool GuiBitmapButtonCtrl::_setBitmap( void *object, const char *index, const char *data )
+bool ShellBitmapButton::_setBitmap( void *object, const char *index, const char *data )
 {
-   GuiBitmapButtonCtrl* ctrl = reinterpret_cast< GuiBitmapButtonCtrl* >( object );
+   ShellBitmapButton* ctrl = reinterpret_cast< ShellBitmapButton* >( object );
    ctrl->setBitmap( data );
    return false;
 }
@@ -213,7 +213,7 @@ bool GuiBitmapButtonCtrl::_setBitmap( void *object, const char *index, const cha
 //-----------------------------------------------------------------------------
 
 // Legacy method.  Can just assign to bitmap field.
-DefineEngineMethod( GuiBitmapButtonCtrl, setBitmap, void, ( const char* path ),,
+DefineEngineMethod( ShellBitmapButton, setBitmap, void, ( const char* path ),,
    "Set the bitmap to show on the button.\n"
    "@param path Path to the texture file in any of the supported formats.\n" )
 {
@@ -222,7 +222,7 @@ DefineEngineMethod( GuiBitmapButtonCtrl, setBitmap, void, ( const char* path ),,
 
 //-----------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::inspectPostApply()
+void ShellBitmapButton::inspectPostApply()
 {
    Parent::inspectPostApply();
 
@@ -264,7 +264,7 @@ void GuiBitmapButtonCtrl::inspectPostApply()
 
 //-----------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::setAutoFitExtents( bool state )
+void ShellBitmapButton::setAutoFitExtents( bool state )
 {
    mAutoFitExtents = state;
    if( mAutoFitExtents )
@@ -273,9 +273,9 @@ void GuiBitmapButtonCtrl::setAutoFitExtents( bool state )
 
 //-----------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::setBitmap( const String& name )
+void ShellBitmapButton::setBitmap( const String& name )
 {
-   PROFILE_SCOPE( GuiBitmapButtonCtrl_setBitmap );
+   PROFILE_SCOPE( ShellBitmapButton_setBitmap );
    
    mBitmapName = name;
    if( !isAwake() )
@@ -327,7 +327,7 @@ void GuiBitmapButtonCtrl::setBitmap( const String& name )
 
             if( i == 0 && mTextures[ i ].mTextureNormal.isNull() && mTextures[ i ].mTextureHilight.isNull() && mTextures[ i ].mTextureDepressed.isNull() && mTextures[ i ].mTextureInactive.isNull() )
             {
-               Con::warnf( "GuiBitmapButtonCtrl::setBitmap - Unable to load texture: %s", mBitmapName.c_str() );
+               Con::warnf( "ShellBitmapButton::setBitmap - Unable to load texture: %s", mBitmapName.c_str() );
                this->setBitmap( GFXTextureManager::getUnavailableTexturePath() );
                return;
             }
@@ -353,7 +353,7 @@ void GuiBitmapButtonCtrl::setBitmap( const String& name )
 
 //-----------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::setBitmapHandles(GFXTexHandle normal, GFXTexHandle highlighted, GFXTexHandle depressed, GFXTexHandle inactive)
+void ShellBitmapButton::setBitmapHandles(GFXTexHandle normal, GFXTexHandle highlighted, GFXTexHandle depressed, GFXTexHandle inactive)
 {
    const U32 count = mUseModifiers ? NumModifiers : 1;
    for( U32 i = 0; i < count; ++ i )
@@ -372,7 +372,7 @@ void GuiBitmapButtonCtrl::setBitmapHandles(GFXTexHandle normal, GFXTexHandle hig
 
       if (mTextures[ i ].mTextureNormal.isNull() && mTextures[ i ].mTextureHilight.isNull() && mTextures[ i ].mTextureDepressed.isNull() && mTextures[ i ].mTextureInactive.isNull())
       {
-         Con::warnf("GuiBitmapButtonCtrl::setBitmapHandles() - Invalid texture handles");
+         Con::warnf("ShellBitmapButton::setBitmapHandles() - Invalid texture handles");
          setBitmap( GFXTextureManager::getUnavailableTexturePath() );
          
          return;
@@ -384,7 +384,7 @@ void GuiBitmapButtonCtrl::setBitmapHandles(GFXTexHandle normal, GFXTexHandle hig
 
 //------------------------------------------------------------------------------
 
-GuiBitmapButtonCtrl::Modifier GuiBitmapButtonCtrl::getCurrentModifier()
+ShellBitmapButton::Modifier ShellBitmapButton::getCurrentModifier()
 {   
    U8 modifierKeys = Input::getModifierKeys();
 
@@ -400,7 +400,7 @@ GuiBitmapButtonCtrl::Modifier GuiBitmapButtonCtrl::getCurrentModifier()
 
 //------------------------------------------------------------------------------
 
-GFXTexHandle& GuiBitmapButtonCtrl::getTextureForCurrentState()
+GFXTexHandle& ShellBitmapButton::getTextureForCurrentState()
 {
    U32 index = ModifierNone;
    if( mUseModifiers )
@@ -444,7 +444,7 @@ GFXTexHandle& GuiBitmapButtonCtrl::getTextureForCurrentState()
 
 //------------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::onAction()
+void ShellBitmapButton::onAction()
 {
    Parent::onAction();
    
@@ -476,7 +476,7 @@ void GuiBitmapButtonCtrl::onAction()
 
 //------------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::onRender(Point2I offset, const RectI& updateRect)
+void ShellBitmapButton::onRender(Point2I offset, const RectI& updateRect)
 {
    GFXTexHandle& texture = getTextureForCurrentState();
    if( texture )
@@ -490,7 +490,7 @@ void GuiBitmapButtonCtrl::onRender(Point2I offset, const RectI& updateRect)
 
 //------------------------------------------------------------------------------
 
-void GuiBitmapButtonCtrl::renderButton( GFXTexHandle &texture, const Point2I &offset, const RectI& updateRect )
+void ShellBitmapButton::renderButton( GFXTexHandle &texture, const Point2I &offset, const RectI& updateRect )
 {
    GFX->getDrawUtil()->clearBitmapModulation();
    
@@ -523,7 +523,7 @@ void GuiBitmapButtonCtrl::renderButton( GFXTexHandle &texture, const Point2I &of
 IMPLEMENT_CONOBJECT( GuiBitmapButtonTextCtrl);
 
 ConsoleDocClass( GuiBitmapButtonTextCtrl,
-   "@brief An extension of GuiBitmapButtonCtrl that additionally renders a text label on the bitmapped button.\n\n"
+   "@brief An extension of ShellBitmapButton that additionally renders a text label on the bitmapped button.\n\n"
    
    "The text for the label is taken from the GuiButtonBaseCtrl::text property.\n\n"
    

@@ -63,7 +63,7 @@ bool GuiInspectorVariableField::onAdd()
       return false;  
 
    {
-      GuiTextEditCtrl *edit = new GuiTextEditCtrl();
+      ShellTextEditCtrl *edit = new ShellTextEditCtrl();
 
       edit->setDataField( StringTable->insert("profile"), NULL, "GuiInspectorTextEditProfile" );
 
@@ -112,7 +112,7 @@ const char* GuiInspectorVariableField::getData( U32 inspectObjectIndex )
 
 void GuiInspectorVariableField::setValue( const char* newValue )
 {
-   GuiTextEditCtrl *ctrl = dynamic_cast<GuiTextEditCtrl*>( mEdit );
+   ShellTextEditCtrl *ctrl = dynamic_cast<ShellTextEditCtrl*>( mEdit );
    if( ctrl != NULL )
       ctrl->setText( newValue );
 }

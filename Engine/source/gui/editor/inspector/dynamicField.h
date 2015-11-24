@@ -63,8 +63,8 @@ protected:
    /// Dynamic field dictionary entry for first target object only.
    SimFieldDictionary::Entry* mDynField;
    
-   SimObjectPtr<GuiTextEditCtrl> mRenameCtrl;
-   GuiBitmapButtonCtrl*          mDeleteButton;
+   SimObjectPtr<ShellTextEditCtrl> mRenameCtrl;
+   ShellBitmapButton*          mDeleteButton;
    RectI                         mDeleteRect;
    RectI                         mValueRect;
 };

@@ -1002,7 +1002,7 @@ void GuiListBoxCtrl::updateSize()
       return;
 
    GFont *font = mProfile->mFont;
-   GuiScrollCtrl* parent = dynamic_cast<GuiScrollCtrl *>(getParent());
+   ShellScrollCtrl* parent = dynamic_cast<ShellScrollCtrl *>(getParent());
 
    if ( mFitParentWidth && parent )
       mItemSize.x = parent->getContentExtent().x;

@@ -93,7 +93,7 @@ public:
 //--------------------------------------------------------------------------------
 // TypeMaterialName GuiInspectorField Class
 //--------------------------------------------------------------------------------
-class GuiBitmapButtonCtrl;
+class ShellBitmapButton;
 
 class GuiInspectorTypeMaterialName : public GuiInspectorField
 {
@@ -106,7 +106,7 @@ public:
    DECLARE_CONOBJECT(GuiInspectorTypeMaterialName);
    static void consoleInit();
 
-   GuiBitmapButtonCtrl *mBrowseButton;
+   ShellBitmapButton *mBrowseButton;
    RectI mBrowseRect;
 
    GuiControl* construct(const char* command);
@@ -268,7 +268,7 @@ class GuiInspectorTypeRectUV : public GuiInspectorField
 {
    typedef GuiInspectorField Parent;
 public:
-   GuiBitmapButtonCtrl *mBrowseButton;
+   ShellBitmapButton *mBrowseButton;
    RectI                mBrowseRect;
 
 public:
@@ -336,7 +336,7 @@ class GuiInspectorTypeShapeFilename : public GuiInspectorTypeFileName
    typedef GuiInspectorTypeFileName Parent;
 public:
 
-   GuiBitmapButtonCtrl  *mShapeEdButton;
+   ShellBitmapButton  *mShapeEdButton;
 
    DECLARE_CONOBJECT(GuiInspectorTypeShapeFilename);
    static void consoleInit();
@@ -502,7 +502,7 @@ public:
 
    DECLARE_CONOBJECT( GuiInspectorTypeBitMask32Helper );
 
-   GuiBitmapButtonCtrl *mButton;
+   ShellBitmapButton *mButton;
    GuiRolloutCtrl *mParentRollout;
    GuiInspectorTypeBitMask32 *mParentField;
    RectI mButtonRect;

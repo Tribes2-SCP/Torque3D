@@ -47,7 +47,7 @@ ConsoleDocClass( GuiTextEditSliderCtrl,
    "};\n"
    "@endtsexample\n\n"
 
-   "@see GuiTextEditCtrl\n\n"
+   "@see ShellTextEditCtrl\n\n"
 
    "@ingroup GuiCore\n"
 );

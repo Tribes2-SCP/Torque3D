@@ -176,7 +176,7 @@ void GuiArrayCtrl::scrollCellVisible(Point2I cell)
 {
    //make sure we have a parent
    //make sure we have a valid cell selected
-   GuiScrollCtrl *parent = dynamic_cast<GuiScrollCtrl*>(getParent());
+   ShellScrollCtrl *parent = dynamic_cast<ShellScrollCtrl*>(getParent());
    if(!parent || cell.x < 0 || cell.y < 0)
       return;
 

@@ -267,7 +267,7 @@ GuiPopUpMenuCtrl::GuiPopUpMenuCtrl(void)
    mSelIndex = -1;
    mActive = true;
    mMaxPopupHeight = 200;
-   mScrollDir = GuiScrollCtrl::None;
+   mScrollDir = ShellScrollCtrl::None;
    mScrollCount = 0;
    mLastYvalue = 0;
    mIncValue = 0;
@@ -849,7 +849,7 @@ void GuiPopUpMenuCtrl::onRender( Point2I offset, const RectI &updateRect )
    TORQUE_UNUSED(updateRect);
    Point2I localStart;
 
-   if ( mScrollDir != GuiScrollCtrl::None )
+   if ( mScrollDir != ShellScrollCtrl::None )
       autoScroll();
 
    GFXDrawUtil* drawUtil = GFX->getDrawUtil();
@@ -1305,8 +1305,8 @@ void GuiPopUpMenuCtrl::addChildren()
    mTl->setControlProfile( mProfile->getChildrenProfile() ? mProfile->getChildrenProfile() : mProfile ); 
    mTl->setField("noDuplicates", "false");
 
-   mSc = new GuiScrollCtrl;
-   AssertFatal( mSc, "Failed to create the GuiScrollCtrl for the PopUpMenu" );
+   mSc = new ShellScrollCtrl;
+   AssertFatal( mSc, "Failed to create the ShellScrollCtrl for the PopUpMenu" );
    GuiControlProfile *prof;
    if ( Sim::findObject( "GuiScrollProfile", prof ) )
    {
@@ -1456,7 +1456,7 @@ void GuiPopUpMenuCtrl::setupAutoScroll( const GuiEvent &event )
 
    if ( mLastYvalue != mousePt.y )
    {
-      mScrollDir = GuiScrollCtrl::None;
+      mScrollDir = ShellScrollCtrl::None;
       if ( mousePt.y > mSc->getHeight() || mousePt.y < 0 )
       {
          S32 topOrBottom = ( mousePt.y > mSc->getHeight() ) ? 1 : 0;
@@ -1468,12 +1468,12 @@ void GuiPopUpMenuCtrl::setupAutoScroll( const GuiEvent &event )
       if ( percent > 0.7f && mousePt.y > mLastYvalue )
       {
          mIncValue = percent - 0.5f;
-         mScrollDir = GuiScrollCtrl::DownArrow;
+         mScrollDir = ShellScrollCtrl::DownArrow;
       }
       else if ( percent < 0.3f && mousePt.y < mLastYvalue )
       {
          mIncValue = 0.5f - percent;         
-         mScrollDir = GuiScrollCtrl::UpArrow;
+         mScrollDir = ShellScrollCtrl::UpArrow;
       }
       mLastYvalue = mousePt.y;
    }

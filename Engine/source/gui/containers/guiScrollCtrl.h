@@ -31,7 +31,7 @@
 /// A control providing a window inside a larger client area which can be
 /// scrolled using scrollbars.
 ///
-class GuiScrollCtrl : public GuiContainer
+class ShellScrollCtrl : public GuiContainer
 {
    public:
 
@@ -198,7 +198,7 @@ class GuiScrollCtrl : public GuiContainer
 
    public:
    
-      GuiScrollCtrl();
+      ShellScrollCtrl();
                                  
       void autoScroll(Region reg);
 
@@ -265,12 +265,12 @@ class GuiScrollCtrl : public GuiContainer
 
       static void initPersistFields();
 
-      DECLARE_CONOBJECT(GuiScrollCtrl);
+      DECLARE_CONOBJECT(ShellScrollCtrl);
       DECLARE_DESCRIPTION( "A container that allows to view a larger GUI control inside its smaller area "
                            "by providing horizontal and/or vertical scroll bars." );
 };
 
-typedef GuiScrollCtrl::ScrollBarBehavior GuiScrollBarBehavior;
+typedef ShellScrollCtrl::ScrollBarBehavior GuiScrollBarBehavior;
 DefineEnumType( GuiScrollBarBehavior );
 
 #endif //_GUI_SCROLL_CTRL_H

@@ -35,7 +35,7 @@
 
 class SFXTrack;
 
-class GuiTextEditCtrl : public GuiTextCtrl
+class ShellTextEditCtrl : public GuiTextCtrl
 {
 private:
    typedef GuiTextCtrl Parent;
@@ -99,9 +99,9 @@ protected:
    S32 findPrevWord();   
 
 public:
-   GuiTextEditCtrl();
-   ~GuiTextEditCtrl();
-   DECLARE_CONOBJECT(GuiTextEditCtrl);
+   ShellTextEditCtrl();
+   ~ShellTextEditCtrl();
+   DECLARE_CONOBJECT(ShellTextEditCtrl);
    DECLARE_DESCRIPTION( "A control that allows to edit a single line of text. ");
    static void initPersistFields();
 

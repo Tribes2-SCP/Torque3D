@@ -27,9 +27,9 @@
 #include "gfx/gfxDrawUtil.h"
 
 
-IMPLEMENT_CONOBJECT(GuiPaneControl);
+IMPLEMENT_CONOBJECT(ShellPaneCtrl);
 
-ConsoleDocClass( GuiPaneControl,
+ConsoleDocClass( ShellPaneCtrl,
    "@brief A collapsable pane control.\n\n"
 
    "This class wraps a single child control and displays a header with caption "
@@ -43,7 +43,7 @@ ConsoleDocClass( GuiPaneControl,
    "header is sized based on the first image.\n\n"
 
    "@tsexample\n"
-   "new GuiPaneControl()\n"
+   "new ShellPaneCtrl()\n"
    "{\n"
    "   caption = \"Example Pane\";\n"
    "   collapsable = \"1\";\n"
@@ -57,7 +57,7 @@ ConsoleDocClass( GuiPaneControl,
 
 //-----------------------------------------------------------------------------
 
-GuiPaneControl::GuiPaneControl()
+ShellPaneCtrl::ShellPaneCtrl()
 {
    setMinExtent(Point2I(16,16));
    
@@ -76,17 +76,17 @@ GuiPaneControl::GuiPaneControl()
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::initPersistFields()
+void ShellPaneCtrl::initPersistFields()
 {
    addGroup( "Pane" );
    
-      addField("caption",       TypeRealString,  Offset(mCaption,        GuiPaneControl),
+      addField("caption",       TypeRealString,  Offset(mCaption,        ShellPaneCtrl),
          "Text label to display as the pane header." );
-      addField("captionID",     TypeString,      Offset(mCaptionID,      GuiPaneControl),
+      addField("captionID",     TypeString,      Offset(mCaptionID,      ShellPaneCtrl),
          "String table text ID to use as caption string (overrides 'caption')." );
-      addField("collapsable",   TypeBool,        Offset(mCollapsable,    GuiPaneControl),
+      addField("collapsable",   TypeBool,        Offset(mCollapsable,    ShellPaneCtrl),
          "Whether the pane can be collapsed by clicking its header." );
-      addField("barBehindText", TypeBool,        Offset(mBarBehindText,  GuiPaneControl),
+      addField("barBehindText", TypeBool,        Offset(mBarBehindText,  ShellPaneCtrl),
          "Whether to draw the bitmapped pane bar behind the header text, too." );
       
    endGroup( "Pane" );
@@ -96,14 +96,14 @@ void GuiPaneControl::initPersistFields()
 
 //-----------------------------------------------------------------------------
 
-bool GuiPaneControl::onWake()
+bool ShellPaneCtrl::onWake()
 {
    if ( !Parent::onWake() )
       return false;
 
    if( !mProfile->mFont )
    {
-      Con::errorf( "GuiPaneControl::onWake - profile has no valid font" );
+      Con::errorf( "ShellPaneCtrl::onWake - profile has no valid font" );
       return false;
    }
 
@@ -129,7 +129,7 @@ bool GuiPaneControl::onWake()
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::setCaptionID(const char *id)
+void ShellPaneCtrl::setCaptionID(const char *id)
 {
 	S32 n = Con::getIntVariable(id, -1);
 	if(n != -1)
@@ -141,14 +141,14 @@ void GuiPaneControl::setCaptionID(const char *id)
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::setCaptionID(S32 id)
+void ShellPaneCtrl::setCaptionID(S32 id)
 {
 	mCaption = getGUIString(id);
 }
 
 //-----------------------------------------------------------------------------
 
-bool GuiPaneControl::resize(const Point2I &newPosition, const Point2I &newExtent)
+bool ShellPaneCtrl::resize(const Point2I &newPosition, const Point2I &newExtent)
 {
    // CodeReview WTF is going on here that we need to bypass parent sanity?
    //  Investigate this [7/1/2007 justind]
@@ -183,7 +183,7 @@ bool GuiPaneControl::resize(const Point2I &newPosition, const Point2I &newExtent
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::onRender(Point2I offset, const RectI &updateRect)
+void ShellPaneCtrl::onRender(Point2I offset, const RectI &updateRect)
 {
    // Render our awesome little doogong
    if(mProfile->mBitmapArrayRects.size() >= 2 && mCollapsable)
@@ -276,7 +276,7 @@ void GuiPaneControl::onRender(Point2I offset, const RectI &updateRect)
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::setCollapsed(bool isCollapsed)
+void ShellPaneCtrl::setCollapsed(bool isCollapsed)
 {
    // Get the child
    if(size() == 0 || !mCollapsable) return;
@@ -305,7 +305,7 @@ void GuiPaneControl::setCollapsed(bool isCollapsed)
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::onMouseMove(const GuiEvent &event)
+void ShellPaneCtrl::onMouseMove(const GuiEvent &event)
 {
    Point2I localMove = globalToLocalCoord(event.mousePoint);
 
@@ -318,7 +318,7 @@ void GuiPaneControl::onMouseMove(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::onMouseEnter(const GuiEvent &event)
+void ShellPaneCtrl::onMouseEnter(const GuiEvent &event)
 {
    setUpdate();
    if(isMouseLocked())
@@ -335,7 +335,7 @@ void GuiPaneControl::onMouseEnter(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::onMouseLeave(const GuiEvent &event)
+void ShellPaneCtrl::onMouseLeave(const GuiEvent &event)
 {
    setUpdate();
    if(isMouseLocked())
@@ -345,7 +345,7 @@ void GuiPaneControl::onMouseLeave(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::onMouseDown(const GuiEvent &event)
+void ShellPaneCtrl::onMouseDown(const GuiEvent &event)
 {
    if(!mCollapsable)
       return;
@@ -365,7 +365,7 @@ void GuiPaneControl::onMouseDown(const GuiEvent &event)
 
 //-----------------------------------------------------------------------------
 
-void GuiPaneControl::onMouseUp(const GuiEvent &event)
+void ShellPaneCtrl::onMouseUp(const GuiEvent &event)
 {
    // Make sure we only get events we ought to be getting...
    if (! mActive)
@@ -388,7 +388,7 @@ void GuiPaneControl::onMouseUp(const GuiEvent &event)
 //    Console Methods.
 //=============================================================================
 
-DefineEngineMethod( GuiPaneControl, setCollapsed, void, ( bool collapse ),,
+DefineEngineMethod( ShellPaneCtrl, setCollapsed, void, ( bool collapse ),,
    "Collapse or un-collapse the control.\n\n"
    "@param collapse True to collapse the control, false to un-collapse it\n" )
 {

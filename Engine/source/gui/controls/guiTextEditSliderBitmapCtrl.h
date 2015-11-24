@@ -30,9 +30,9 @@
 #include "gui/controls/guiTextEditCtrl.h"
 #endif
 
-class GuiTextEditSliderBitmapCtrl : public GuiTextEditCtrl
+class GuiTextEditSliderBitmapCtrl : public ShellTextEditCtrl
 {
-   typedef GuiTextEditCtrl Parent;
+   typedef ShellTextEditCtrl Parent;
 
 public:
 

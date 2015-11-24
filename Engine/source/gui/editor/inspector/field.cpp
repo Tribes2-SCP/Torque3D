@@ -431,7 +431,7 @@ StringTableEntry GuiInspectorField::getFieldType()
 
 GuiControl* GuiInspectorField::constructEditControl()
 {
-   GuiControl* retCtrl = new GuiTextEditCtrl();
+   GuiControl* retCtrl = new ShellTextEditCtrl();
 
    static StringTableEntry sProfile = StringTable->insert( "profile" );
    retCtrl->setDataField( sProfile, NULL, "GuiInspectorTextEditProfile" );
@@ -475,7 +475,7 @@ void GuiInspectorField::setInspectorProfile()
 
 void GuiInspectorField::setValue( StringTableEntry newValue )
 {
-   GuiTextEditCtrl *ctrl = dynamic_cast<GuiTextEditCtrl*>( mEdit );
+   ShellTextEditCtrl *ctrl = dynamic_cast<ShellTextEditCtrl*>( mEdit );
    if( ctrl != NULL )
       ctrl->setText( newValue );
 }
@@ -528,7 +528,7 @@ void GuiInspectorField::setHLEnabled( bool enabled )
       if ( mEdit && !mEdit->isFirstResponder() )
       {
          mEdit->setFirstResponder();
-         GuiTextEditCtrl *edit = dynamic_cast<GuiTextEditCtrl*>( mEdit );
+         ShellTextEditCtrl *edit = dynamic_cast<ShellTextEditCtrl*>( mEdit );
          if ( edit )
          {
             mouseUnlock();

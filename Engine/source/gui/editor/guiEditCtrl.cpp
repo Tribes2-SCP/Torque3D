@@ -2795,7 +2795,7 @@ class GuiEditorRuler : public GuiControl
       String mRefCtrlName;
       String mEditCtrlName;
       
-      GuiScrollCtrl* mRefCtrl;
+      ShellScrollCtrl* mRefCtrl;
       GuiEditCtrl* mEditCtrl;
 
    public:
@@ -2829,7 +2829,7 @@ class GuiEditorRuler : public GuiControl
             Con::errorf( "GuiEditorRuler::onWake() - no GuiEditCtrl '%s'", mEditCtrlName.c_str() );
          
          if( !mRefCtrlName.isEmpty() && !Sim::findObject( mRefCtrlName, mRefCtrl ) )
-            Con::errorf( "GuiEditorRuler::onWake() - no GuiScrollCtrl '%s'", mRefCtrlName.c_str() );
+            Con::errorf( "GuiEditorRuler::onWake() - no ShellScrollCtrl '%s'", mRefCtrlName.c_str() );
          
          return true;
       }

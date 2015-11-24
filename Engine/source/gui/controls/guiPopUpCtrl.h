@@ -99,7 +99,7 @@ public:
 
 protected:
    GuiPopupTextListCtrl *mTl;
-   GuiScrollCtrl *mSc;
+   ShellScrollCtrl *mSc;
    GuiPopUpBackgroundCtrl *mBackground;
    Vector<Entry> mEntries;
    Vector<Scheme> mSchemes;
@@ -127,7 +127,7 @@ protected:
 public:
    GuiPopUpMenuCtrl(void);
    ~GuiPopUpMenuCtrl();   
-   GuiScrollCtrl::Region mScrollDir;
+   ShellScrollCtrl::Region mScrollDir;
    bool onWake(); //  Added
    bool onAdd();
    void onSleep();

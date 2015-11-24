@@ -421,7 +421,7 @@ public:
 
    /// This is used to toggle processing of native OS accelerators, not
    /// to be confused with the Torque accelerator key system, to keep them
-   /// from swallowing up keystrokes.  Both GuiTextEditCtrl and GuiTextPadCtrl
+   /// from swallowing up keystrokes.  Both ShellTextEditCtrl and GuiTextPadCtrl
    /// use this method.
    virtual void setNativeAcceleratorsEnabled( bool enabled );
    /// @}

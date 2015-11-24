@@ -78,7 +78,7 @@ ConsoleDocClass( GuiTextEditSliderBitmapCtrl,
    "@endtsexample\n\n"
 
    "@see GuiTextEditSliderCtrl\n\n"
-   "@see GuiTextEditCtrl\n\n"
+   "@see ShellTextEditCtrl\n\n"
 
    "@ingroup GuiCore\n"
 );

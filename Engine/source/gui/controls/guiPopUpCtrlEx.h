@@ -99,7 +99,7 @@ class GuiPopUpMenuCtrlEx : public GuiTextCtrl
 
   protected:
    GuiPopupTextListCtrlEx *mTl;
-   GuiScrollCtrl *mSc;
+   ShellScrollCtrl *mSc;
    GuiPopUpBackgroundCtrlEx *mBackground;
    Vector<Entry> mEntries;
    Vector<Scheme> mSchemes;
@@ -128,7 +128,7 @@ class GuiPopUpMenuCtrlEx : public GuiTextCtrl
   public:
    GuiPopUpMenuCtrlEx(void);
    ~GuiPopUpMenuCtrlEx();   
-   GuiScrollCtrl::Region mScrollDir;
+   ShellScrollCtrl::Region mScrollDir;
    bool onWake(); //  Added
    bool onAdd();
    void onSleep();

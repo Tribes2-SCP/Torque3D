@@ -1288,11 +1288,11 @@ bool GuiTreeViewCtrl::scrollVisible( Item *item )
    }
 
    // Get our scroll-pappy, if any.
-   GuiScrollCtrl *pScrollParent = dynamic_cast<GuiScrollCtrl*>( getParent() );
+   ShellScrollCtrl *pScrollParent = dynamic_cast<ShellScrollCtrl*>( getParent() );
 
    if ( !pScrollParent )
    {
-      Con::warnf("GuiTreeViewCtrl::scrollVisible - parent control is not a GuiScrollCtrl!");
+      Con::warnf("GuiTreeViewCtrl::scrollVisible - parent control is not a ShellScrollCtrl!");
       return false;
    }
 
@@ -3477,7 +3477,7 @@ void GuiTreeViewCtrl::onMouseDragged(const GuiEvent &event)
    // If the drag is outside of our visible area,
    // start scrolling.
    
-   GuiScrollCtrl* scrollCtrl = dynamic_cast< GuiScrollCtrl* >( getParent() );
+   ShellScrollCtrl* scrollCtrl = dynamic_cast< ShellScrollCtrl* >( getParent() );
    if( scrollCtrl && !scrollCtrl->isPointVisible( pt ) )
    {
       S32 widthDelta = 0;
@@ -4201,7 +4201,7 @@ bool GuiTreeViewCtrl::renderTooltip( const Point2I &hoverPos, const Point2I& cur
          // Only render tooltip if the item's text is cut off with its
          // parent scroll control, unless there is custom object-based
          // tooltip information.
-         GuiScrollCtrl *pScrollParent = dynamic_cast<GuiScrollCtrl*>( getParent() );
+         ShellScrollCtrl *pScrollParent = dynamic_cast<ShellScrollCtrl*>( getParent() );
          if ( pScrollParent )
          {
             Point2I textStart;
@@ -5390,7 +5390,7 @@ void GuiTreeViewCtrl::showItemRenameCtrl( Item* item )
    
    if ( !mRenameCtrl )
    {
-      mRenameCtrl = new GuiTextEditCtrl;
+      mRenameCtrl = new ShellTextEditCtrl;
       mRenameCtrl->registerObject();
       addObject( mRenameCtrl );        
       
