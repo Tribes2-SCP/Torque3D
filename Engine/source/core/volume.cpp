@@ -722,6 +722,7 @@ FileNodeRef MountSystem::getFileNode(const Path& path)
    if (fs != NULL){
        return fs->resolve(np);
    }
+   
    return NULL;
 }
 
@@ -809,6 +810,20 @@ S32 MountSystem::findByPattern( const Path &inBasePath, const String &inFilePatt
 bool MountSystem::isFile(const Path& path)
 {
    FileNode::Attributes attr;
+   for (int i=0; i<SEARCH_PATH_SIZE; i++){
+       char newpathca[1024]="";
+       if (strcmp(searchPath[i],"")==0)
+           break;
+       strncat(newpathca,searchPath[i],200);
+       strncat(newpathca,path.getPath(),200);
+       String newpathstr(newpathca);
+       Path newpath=path;
+       newpath.setPath(newpathstr);
+       //Con::errorf("Path: %s/%s",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
+       if (getFileAttributes(newpath,&attr))
+           if (attr.flags & FileNode::File)
+               return attr.flags & FileNode::File;
+   }
    if (getFileAttributes(path,&attr))
       return attr.flags & FileNode::File;
    return false;
