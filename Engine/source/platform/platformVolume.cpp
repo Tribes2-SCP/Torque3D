@@ -50,7 +50,7 @@ bool  MountDefaults()
 
 #ifndef TORQUE_DISABLE_VIRTUAL_MOUNT_SYSTEM
    // Note that the VirtualMountSystem must be enabled in volume.cpp for zip support to work.
-   return MountZips("game");
+   return MountZips("game/compat/base");
 #else
    return true;
 #endif
@@ -62,7 +62,7 @@ bool MountZips(const String &root)
    basePath.setRoot(root);
    Vector<String> outList;
 
-   S32 num = FindByPattern(basePath, "*.zip", true, outList);
+   S32 num = FindByPattern(basePath, "*.vl2", true, outList);
    if(num == 0)
       return true; // not an error
 

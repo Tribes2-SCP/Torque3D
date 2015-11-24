@@ -49,6 +49,9 @@
 
 #include <new>
 #include <typeinfo>
+// Global Search Path
+#define SEARCH_PATH_SIZE 50
+extern char searchPath[SEARCH_PATH_SIZE][1024];
 
 /// Global processor identifiers.
 ///
