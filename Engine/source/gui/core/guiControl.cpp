@@ -830,8 +830,10 @@ bool GuiControl::onWake()
       mFirstResponder = findFirstTabable();
 
    //increment the profile
-   mProfile->incLoadCount();
-   mTooltipProfile->incLoadCount();
+   if (mProfile)
+       mProfile->incLoadCount();
+   if (mTooltipProfile)
+       mTooltipProfile->incLoadCount();
 
    // Only invoke script callbacks if we have a namespace in which to do so
    // This will suppress warnings
@@ -856,8 +858,10 @@ void GuiControl::onSleep()
    onSleep_callback();
 
    //decrement the profile reference
-   mProfile->decLoadCount();
-   mTooltipProfile->decLoadCount();
+   if (mProfile)
+       mProfile->decLoadCount();
+   if (mTooltipProfile)
+       mTooltipProfile->decLoadCount();
 
    // Set Flag
    mAwake = false;
