@@ -715,8 +715,8 @@ bool GuiControl::onAdd()
       GuiControlProfile *profile = NULL;
       Sim::findObject( "GuiDefaultProfile", profile );
 
-      AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified profile and GuiDefaultProfile does not exist!") );
-
+      //AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified profile and GuiDefaultProfile does not exist!") );
+      Con::errorf("GuiControl::onAdd() unable to find specified profile and GuiDefaultProfile does not exist!");
       setControlProfile( profile );
    }
 
@@ -725,8 +725,8 @@ bool GuiControl::onAdd()
    {
       GuiControlProfile *profile = NULL;
       Sim::findObject( "GuiTooltipProfile", profile );
-
-      AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified tooltip profile and GuiTooltipProfile does not exist!") );
+      Con::errorf("GuiControl::onAdd() unable to find specified tooltip profile and GuiTooltipProfile does not exist!");
+      //AssertISV( profile != NULL, avar("GuiControl::onAdd() unable to find specified tooltip profile and GuiTooltipProfile does not exist!") );
 
       setTooltipProfile( profile );
    }
@@ -1464,7 +1464,7 @@ bool GuiControl::pointInControl(const Point2I& parentCoordPoint)
 
 void GuiControl::setTooltipProfile( GuiControlProfile *prof )
 {
-   AssertFatal( prof, "GuiControl::setTooltipProfile: invalid profile" );
+   //AssertFatal( prof, "GuiControl::setTooltipProfile: invalid profile" );
 
    if ( prof == mTooltipProfile )
       return;
@@ -1507,8 +1507,8 @@ void GuiControl::setTooltipProfile( GuiControlProfile *prof )
 
 void GuiControl::setControlProfile( GuiControlProfile *prof )
 {
-   AssertFatal( prof, "GuiControl::setControlProfile: invalid profile" );
-
+   //AssertFatal( prof, "GuiControl::setControlProfile: invalid profile" );
+   Con::errorf("GuiControl::setControlProfile: invalid profile");
    if ( prof == mProfile )
       return;
 

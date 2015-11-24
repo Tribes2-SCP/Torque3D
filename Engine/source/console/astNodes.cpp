@@ -1463,6 +1463,7 @@ U32 ObjectDeclNode::compileSubObject(CodeStream &codeStream, U32 ip, bool root)
    codeStream.emit(OP_PUSH_FRAME);
 
    ip = classNameExpr->compile(codeStream, ip, TypeReqString);
+   
    codeStream.emit(OP_PUSH);
 
    ip = objectNameExpr->compile(codeStream, ip, TypeReqString);

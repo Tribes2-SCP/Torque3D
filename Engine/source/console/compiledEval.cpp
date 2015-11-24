@@ -44,7 +44,38 @@
 #include "materials/materialDefinition.h"
 #include "materials/materialManager.h"
 #endif
+// Added a string replace function to help with Tribes2 backwards compatibility
+#include <string>
+std::string dbStartList[]={""};
+std::string dbReplacedList[]={""};
+std::string classStartList[]={"shellfieldctrl","shellpanectrl","showtsctrl","guiscrollcontentctrl","shellpopupmenu",""};
+std::string classReplacedList[]={"GuiControl","GuiPaneCtrl","GuiTSCtrl","GuiScrollCtrl","GuiPopupMenuCtrl",""};
 
+std::string& strreplace(std::string& s, const std::string& from, const std::string& to)
+{
+    if(!from.empty())
+        for(size_t pos = 0; (pos = s.find(from, pos)) != std::string::npos; pos += to.size())
+            s.replace(pos, from.size(), to);
+    return s;
+}
+const char * classReplacer(const char * input, bool isDatablock) {
+    std::string outstr = std::string(input);
+    std::transform(outstr.begin(),outstr.end(),outstr.begin(),::tolower);
+    if (isDatablock) {
+        for(int i=0;i<50;i++) {
+            if (strcmp(dbStartList[i].c_str(),"")==0)
+                break;
+            outstr=strreplace(outstr,dbStartList[i],dbReplacedList[i]);
+        }
+    } else {
+        for(int i=0;i<50;i++) {
+            if (strcmp(classStartList[i].c_str(),"")==0)
+                break;
+            outstr=strreplace(outstr,classStartList[i],classReplacedList[i]);
+        }
+    }
+    return strdup(outstr.c_str());
+}
 // Uncomment to optimize function calls at the expense of potential invalid package lookups
 //#define COMPILER_OPTIMIZE_FUNCTION_CALLS
 
@@ -678,7 +709,6 @@ breakContinue:
             // Get the constructor information off the stack.
             CSTK.getArgcArgv(NULL, &callArgc, &callArgv);
             const char *objectName = callArgv[ 2 ];
-
             // Con::printf("Creating object...");
 
             // objectName = argv[1]...
@@ -694,7 +724,7 @@ breakContinue:
                SimObject *db = Sim::getDataBlockGroup()->findObject( objectName );
                
                // Make sure we're not changing types on ourselves...
-               if(db && dStricmp(db->getClassName(), callArgv[1]))
+               if(db && dStricmp(db->getClassName(), classReplacer(callArgv[1],isDataBlock)))
                {
                   Con::errorf(ConsoleLogEntry::General, "%s: Cannot re-declare data block %s with a different class.", getFileLine(ip), objectName);
                   ip = failJump;
@@ -727,10 +757,10 @@ breakContinue:
                   if ( isSingleton )
                   {
                      // Make sure we're not trying to change types
-                     if ( dStricmp( obj->getClassName(), (const char*)callArgv[1] ) != 0 )
+                     if ( dStricmp( obj->getClassName(), (const char*)classReplacer(callArgv[1],isDataBlock) ) != 0 )
                      {
                         Con::errorf(ConsoleLogEntry::General, "%s: Cannot re-declare object [%s] with a different class [%s] - was [%s].",
-                           getFileLine(ip), objectName, (const char*)callArgv[1], obj->getClassName());
+                           getFileLine(ip), objectName, (const char*)classReplacer(callArgv[1],isDataBlock), obj->getClassName());
                         ip = failJump;
                         STR.popFrame();
                         CSTK.popFrame();
@@ -827,12 +857,12 @@ breakContinue:
             if(!currentNewObject)
             {
                // Well, looks like we have to create a new object.
-               ConsoleObject *object = ConsoleObject::create((const char*)callArgv[1]);
+               ConsoleObject *object = ConsoleObject::create((const char*)classReplacer(callArgv[1],isDataBlock));
 
                // Deal with failure!
                if(!object)
                {
-                  Con::errorf(ConsoleLogEntry::General, "%s: Unable to instantiate non-conobject class %s.", getFileLine(ip), (const char*)callArgv[1]);
+                  Con::errorf(ConsoleLogEntry::General, "%s: Unable to instantiate non-conobject class %s.", getFileLine(ip), (const char*)classReplacer(callArgv[1],isDataBlock));
                   ip = failJump;
                   break;
                }
@@ -848,7 +878,7 @@ breakContinue:
                   else
                   {
                      // They tried to make a non-datablock with a datablock keyword!
-                     Con::errorf(ConsoleLogEntry::General, "%s: Unable to instantiate non-datablock class %s.", getFileLine(ip), (const char*)callArgv[1]);
+                     Con::errorf(ConsoleLogEntry::General, "%s: Unable to instantiate non-datablock class %s.", getFileLine(ip), (const char*)classReplacer(callArgv[1],isDataBlock));
                      // Clean up...
                      delete object;
                      ip = failJump;
@@ -862,7 +892,7 @@ breakContinue:
                // Deal with the case of a non-SimObject.
                if(!currentNewObject)
                {
-                  Con::errorf(ConsoleLogEntry::General, "%s: Unable to instantiate non-SimObject class %s.", getFileLine(ip), (const char*)callArgv[1]);
+                  Con::errorf(ConsoleLogEntry::General, "%s: Unable to instantiate non-SimObject class %s.", getFileLine(ip), (const char*)classReplacer(callArgv[1],isDataBlock));
                   delete object;
                   ip = failJump;
                   break;
@@ -889,7 +919,7 @@ breakContinue:
                   else
                   {
                      if ( Con::gObjectCopyFailures == -1 )
-                        Con::errorf(ConsoleLogEntry::General, "%s: Unable to find parent object %s for %s.", getFileLine(ip), objParent, (const char*)callArgv[1]);
+                        Con::errorf(ConsoleLogEntry::General, "%s: Unable to find parent object %s for %s.", getFileLine(ip), objParent, (const char*)classReplacer(callArgv[1],isDataBlock));
                      else
                         ++Con::gObjectCopyFailures;
 
