@@ -671,10 +671,17 @@ bool GuiWindowCtrl::onWake()
 {
    if (! Parent::onWake())
       return false;
-
+   bool result;
    //get the texture for the close, minimize, and maximize buttons
-   mTextureObject = mProfile->mTextureObject;
-   bool result = mProfile->constructBitmapArray() >= NumBitmaps;
+   if (mProfile->mTextureObject.isValid() && !mProfile->mTextureObject.isNull()){
+       mTextureObject = mProfile->mTextureObject;
+       result = mProfile->constructBitmapArray() >= NumBitmaps;
+   } 
+   else
+   {
+       mTextureObject = NULL;
+       result=false;
+   }
    if( !result )
    {
       Con::errorf( "GuiWindowCtrl::onWake - failed to create bitmap array from profile bitmap." );

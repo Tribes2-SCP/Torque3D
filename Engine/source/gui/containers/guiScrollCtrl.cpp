@@ -1044,7 +1044,7 @@ void GuiScrollCtrl::onRender(Point2I offset, const RectI &updateRect)
    // Always call parent
    Parent::onRender(offset, contentRect);
    
-   if( mTextureObject )
+   if( mTextureObject && !mTextureObject.isNull() && mTextureObject.isValid())
    {
       // Reset the ClipRect as the parent call can modify it when rendering
       // the child controls

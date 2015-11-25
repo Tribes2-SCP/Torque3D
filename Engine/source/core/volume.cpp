@@ -693,7 +693,7 @@ bool MountSystem::getFileAttributes(const Path& path,FileNode::Attributes* attr)
 
    return false;
 }
-
+#define VOLUME_LOG
 FileNodeRef MountSystem::getFileNode(const Path& path)
 {
    Torque::FS::FileNodeRef ref;
@@ -706,7 +706,11 @@ FileNodeRef MountSystem::getFileNode(const Path& path)
        String newpathstr(newpathca);
        Path newpath=path;
        newpath.setPath(newpathstr);
-       //Con::errorf("Path: %s/%s",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
+#ifdef VOLUME_LOG
+       FILE * vlog = fopen("volume.log","a+");
+       fprintf(vlog,"Path: %s/%s\n",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
+       fclose(vlog);
+#endif
        Path np = _normalize(newpath);
        FileSystemRef fs = _getFileSystemFromList(np);
        if (fs != NULL){
@@ -819,6 +823,11 @@ bool MountSystem::isFile(const Path& path)
        String newpathstr(newpathca);
        Path newpath=path;
        newpath.setPath(newpathstr);
+#ifdef VOLUME_LOG
+       FILE * vlog = fopen("volume.log","a+");
+       fprintf(vlog,"Path: %s/%s\n",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
+       fclose(vlog);
+#endif
        //Con::errorf("Path: %s/%s",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
        if (getFileAttributes(newpath,&attr))
            if (attr.flags & FileNode::File)
