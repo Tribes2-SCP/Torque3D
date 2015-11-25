@@ -48,8 +48,8 @@
 #include <string>
 std::string dbStartList[]={""};
 std::string dbReplacedList[]={""};
-std::string classStartList[]={"shellfieldctrl","shellpanectrl","showtsctrl","guiscrollcontentctrl","shellpopupmenu","shelllaunchmenu","shelltabgroupctrl","guitreeview","shellbitmapbutton","shellradiobutton","shelltogglebutton","shellsliderctrl","guiscrollcontentctrl","shelltexteditctrl","shellscrollctrl","shelltabbutton",""};
-std::string classReplacedList[]={"GuiControl","GuiPaneControl","GuiTSCtrl","GuiScrollCtrl","GuiPopupMenuCtrl","GuiPopUpMenuCtrlEx","GuiTabPageCtrl","GuiTreeViewCtrl","GuiBitmapButtonCtrl","GuiRadioCtrl","GuiToggleButtonCtrl","GuiSliderCtrl","GuiControl","GuiTextEditCtrl"                ,"GuiScrollCtrl"  ,"GuiButtonCtrl",""};
+std::string classStartList[]={"shellfieldctrl","shellpanectrl","showtsctrl","guiscrollcontentctrl","shellpopupmenu","shelllaunchmenu","shelltabgroupctrl","guitreeview","shellbitmapbutton","shellradiobutton","shelltogglebutton","shellsliderctrl","guiscrollcontentctrl","shelltexteditctrl","shellscrollctrl","shelltabbutton","guiwindowctrl"};
+std::string classReplacedList[]={"GuiControl","GuiPaneControl","GuiTSCtrl","GuiScrollCtrl","GuiPopupMenuCtrl","GuiPopUpMenuCtrlEx","GuiTabPageCtrl","GuiTreeViewCtrl","GuiBitmapButtonCtrl","GuiRadioCtrl","GuiToggleButtonCtrl","GuiSliderCtrl","GuiControl","GuiTextEditCtrl"                ,"GuiScrollCtrl"  ,"GuiButtonCtrl","GuiControl"};
 
 std::string& strreplace(std::string& s, const std::string& from, const std::string& to)
 {

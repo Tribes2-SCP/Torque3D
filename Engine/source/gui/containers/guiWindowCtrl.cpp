@@ -679,6 +679,7 @@ bool GuiWindowCtrl::onWake()
    } 
    else
    {
+       Con::errorf("Textures Missing\n");
        mTextureObject = NULL;
        result=false;
    }
