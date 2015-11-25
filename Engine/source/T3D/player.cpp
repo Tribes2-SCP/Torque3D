@@ -92,7 +92,7 @@ static S32 sProneTrigger = 4;
 static S32 sSprintTrigger = 5;
 static S32 sImageTrigger0 = 0;
 static S32 sImageTrigger1 = 1;
-static S32 sJumpJetTrigger = 1;
+static S32 sJetTrigger = 1;
 static S32 sVehicleDismountTrigger = 2;
 
 // Client prediction
@@ -3049,7 +3049,7 @@ void Player::updateMove(const Move* move)
    }
 
    // Here we attempt to mimic the Tribes 2 jetting behavior
-   if (move->trigger[sJumpJetTrigger] && !isMounted() && canJet())
+   if (move->trigger[sJetTrigger] && !isMounted() && canJet())
    {
       mJetting = true;
       mEnergy -= mDataBlock->jetEnergyDrain;
@@ -6886,8 +6886,8 @@ void Player::consoleInit()
       "@brief The move trigger index used to trigger mounted image 1 or alternate fire "
       "on mounted image 0.\n\n"
 	   "@ingroup GameObjects\n");
-   Con::addVariable("$player::jumpJetTrigger", TypeS32, &sJumpJetTrigger,
-      "@brief The move trigger index used for player jump jetting.\n\n"
+   Con::addVariable("$player::jetTrigger", TypeS32, &sJetTrigger,
+      "@brief The move trigger index used for player jetting.\n\n"
 	   "@ingroup GameObjects\n");
    Con::addVariable("$player::vehicleDismountTrigger", TypeS32, &sVehicleDismountTrigger,
       "@brief The move trigger index used to dismount player.\n\n"
