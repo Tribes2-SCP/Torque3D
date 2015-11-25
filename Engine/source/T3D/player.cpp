@@ -1663,6 +1663,8 @@ Player::Player()
    mLastAbsolutePitch = 0.0f;
    mLastAbsoluteRoll = 0.0f;
 
+   mLiftoffDustEmitter = NULL;
+
    // Initialize all the jet forces to zero
    mVerticalJetForce = 0;
    for (U32 i = 0; i < 4; i++)
@@ -1950,6 +1952,7 @@ bool Player::onNewDataBlock( GameBaseData *dptr, bool reload )
    // Initialize our scaled attributes as well
    onScaleChanged();
    resetWorldBox();
+
 
    // Reinitialize the jetting system
    mVerticalJetForce = mDataBlock->jetForce;
@@ -2559,7 +2562,7 @@ void Player::distributeJetForce(void)
             return;
 
         // Kill some jet energy
-        mEnergy -= mDataBlock->jetEnergyDrain * TickSec;
+        mEnergy -= mDataBlock->jetEnergyDrain;
 
         F32 distributedForceTotal = activeHorizontalJetCount() * mDataBlock->jetForce * Player::sJetForceDistributionFactor * TickSec;
         F32 distributedForce = distributedForceTotal / activeHorizontalJetCount();
@@ -3119,25 +3122,84 @@ void Player::updateMove(const Move* move)
       // Apply jet forces
       MatrixF transform = getTransform();
 
-      mAppliedForce.z += mVerticalJetForce;
+      mAppliedForce.z += mVerticalJetForce / 5 * 18;
 
       if (mHorizontalJetStates[0])
-        mAppliedForce += -transform.getRightVector() * mHorizontalJetForces[0];
+        mAppliedForce += -transform.getRightVector() * (mHorizontalJetForces[0] / 5 * 18);
 
       if (mHorizontalJetStates[1])
-        mAppliedForce += transform.getRightVector() * mHorizontalJetForces[1];
+        mAppliedForce += transform.getRightVector() * (mHorizontalJetForces[1] / 5 * 18);
 
       if (mHorizontalJetStates[2])
-        mAppliedForce += -transform.getForwardVector() * mHorizontalJetForces[2];
+        mAppliedForce += -transform.getForwardVector() * (mHorizontalJetForces[2] / 5 * 18);
 
       if (mHorizontalJetStates[3])
-        mAppliedForce += transform.getForwardVector() * mHorizontalJetForces[3];
+        mAppliedForce += transform.getForwardVector() * (mHorizontalJetForces[3] / 5 * 18);
 
       // Calculate the jet states
       mHorizontalJetStates[0] = move->x < 0; // Jetting Left
       mHorizontalJetStates[1] = move->x > 0; // Jetting Right
       mHorizontalJetStates[2] = move->y < 0; // Jetting Back
       mHorizontalJetStates[3] = move->y > 0; // Jetting Forward
+
+      // Do the jet emitter
+      RayInfo rayCast;
+
+      // FIXME: Don't recreate the dust emitter every tick
+      // FIXME: Is this being run on the server too?
+      if( mDataBlock->dustEmitter != NULL && gClientContainer.castRay( transform.getPosition(),
+          transform.getPosition() - Point3F(0, 0, 0.8),
+          STATIC_COLLISION_TYPEMASK | VehicleObjectType, &rayCast ) )
+      {
+          ParticleEmitter* emitter = new ParticleEmitter;
+          emitter->onNewDataBlock(mDataBlock->dustEmitter, false);
+
+          if (!emitter->registerObject())
+          {
+               Con::warnf( ConsoleLogEntry::General, "Could not register emitter for particle of class: %s", mDataBlock->getName() );
+               delete emitter;
+          }
+          else
+          {
+               ColorF colorList[ ParticleData::PDC_NUM_KEYS];
+               for (U32 i = 0; i < ParticleData::PDC_NUM_KEYS; i++)
+                    colorList[i] = ColorF(1, 1, 1, 1);
+               emitter->setColors( colorList );
+
+               emitter->emitParticles(rayCast.point, false, rayCast.normal, Point3F(0, 0, 0), mDataBlock->dustEmitter->lifetimeMS);
+               emitter->deleteWhenEmpty();
+          }
+      }
+
+/*
+         // New emitter every time for visibility reasons
+               ParticleEmitter * emitter = new ParticleEmitter;
+               emitter->onNewDataBlock( mDataBlock->footPuffEmitter, false );
+
+               ColorF colorList[ ParticleData::PDC_NUM_KEYS];
+
+               for( U32 x = 0; x < getMin( Material::NUM_EFFECT_COLOR_STAGES, ParticleData::PDC_NUM_KEYS ); ++ x )
+                  colorList[ x ].set( material->mEffectColor[ x ].red,
+                                      material->mEffectColor[ x ].green,
+                                      material->mEffectColor[ x ].blue,
+                                      material->mEffectColor[ x ].alpha );
+               for( U32 x = Material::NUM_EFFECT_COLOR_STAGES; x < ParticleData::PDC_NUM_KEYS; ++ x )
+                  colorList[ x ].set( 1.0, 1.0, 1.0, 0.0 );
+
+               if( !emitter->registerObject() )
+               {
+                  Con::warnf( ConsoleLogEntry::General, "Could not register emitter for particle of class: %s", mDataBlock->getName() );
+                  delete emitter;
+                  emitter = NULL;
+               }
+               else
+               {
+                  emitter->emitParticles( pos, Point3F( 0.0, 0.0, 1.0 ), mDataBlock->footPuffRadius,
+                     Point3F( 0, 0, 0 ), mDataBlock->footPuffNumParts );
+                  emitter->deleteWhenEmpty();
+               }
+            }
+*/
    }
    else
    {
@@ -3171,6 +3233,7 @@ void Player::updateMove(const Move* move)
       mVelocity.x *= scale;
       mVelocity.y *= scale;
    }
+
    if(mVelocity.z > mDataBlock->upResistSpeed)
    {
       if(mVelocity.z > mDataBlock->upMaxSpeed)

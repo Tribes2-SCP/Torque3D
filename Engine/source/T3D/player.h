@@ -476,7 +476,7 @@ protected:
    SimObjectPtr<ShapeBase> mControlObject; ///< Controlling object
 
    /// Player Jet state data
-   static const F32 sJetForceDistributionFactor = 0.1; ///< Percent per second
+   static const F32 sJetForceDistributionFactor = 0.03; ///< Percent per second
    F32 mVerticalJetForce;
    F32 mHorizontalJetForces[4];
    bool mHorizontalJetStates[4];
@@ -590,6 +590,7 @@ protected:
 
    // Jetting
    bool mJetting;
+   ParticleEmitter* mLiftoffDustEmitter;
 
    ///Update the movement
    virtual void updateMove(const Move *move);
