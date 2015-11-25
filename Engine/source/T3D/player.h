@@ -205,6 +205,8 @@ struct PlayerData: public ShapeBaseData {
       ImpactWaterMedium,
       ImpactWaterHard,
       ExitWater,
+      Jet,
+      UnderwaterJet,
       MaxSounds
    };
    SFXTrack* sound[MaxSounds];
@@ -476,9 +478,6 @@ protected:
    SimObjectPtr<ShapeBase> mControlObject; ///< Controlling object
 
    /// Player Jet state data
-   static const F32 sJetForceDistributionFactor = 0.03; ///< Percent per second
-   F32 mVerticalJetForce;
-   F32 mHorizontalJetForces[4];
    bool mHorizontalJetStates[4];
 
    /// @name Animation threads & data
@@ -591,6 +590,8 @@ protected:
    // Jetting
    bool mJetting;
    ParticleEmitter* mLiftoffDustEmitter;
+   SFXSource* mJetSound;
+   SFXSource* mUnderwaterJetSound;
 
    ///Update the movement
    virtual void updateMove(const Move *move);
@@ -663,12 +664,6 @@ protected:
    F32  deathDelta(Point3F &delta);
    void updateDeathOffsets();
    bool inSittingAnim();
-
-   /// @name Jetting
-   void distributeJetForce(void);
-   U32 activeHorizontalJetCount(void);
-   F32 sumHorizontalJetForces(void);
-   /// @}
 
    /// @name Water
    /// @{

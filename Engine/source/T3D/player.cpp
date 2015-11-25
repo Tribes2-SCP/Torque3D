@@ -1070,6 +1070,15 @@ void PlayerData::initPersistFields()
 
    endGroup( "Interaction: Sounds" );
 
+   addGroup( "Sounds: Jetting" );
+         addField( "jetSound", TypeSFXTrackName, Offset(sound[Jet], PlayerData),
+         "@brief Sound to play when the player is jetting and not underwater.\n\n");
+
+         addField( "underwaterJetSound", TypeSFXTrackName, Offset(sound[UnderwaterJet], PlayerData),
+         "@brief Sound to play when the player is jetting and is underwater.\n\n");
+
+   addGroup( "Sounds: Jetting" );
+
    addGroup( "Interaction: Splashes" );
 
       addField( "splash", TYPEID< SplashData >(), Offset(splash, PlayerData),
@@ -1614,7 +1623,6 @@ Player::Player()
    mInWater = false;
    mPose = StandPose;
    mContactTimer = 0;
-   mVerticalJetForce = 0;
    mJumpDelay = 0;
    mJumpSurfaceLastContact = 0;
    mJumpSurfaceNormal.set(0.0f, 0.0f, 1.0f);
@@ -1633,6 +1641,8 @@ Player::Player()
 
    mMoveBubbleSound = 0;
    mWaterBreathSound = 0;
+   mJetSound = NULL;
+   mUnderwaterJetSound = NULL;
 
    mConvex.init(this);
    mWorkingQueryBox.minExtents.set(-1e9f, -1e9f, -1e9f);
@@ -1665,13 +1675,9 @@ Player::Player()
 
    mLiftoffDustEmitter = NULL;
 
-   // Initialize all the jet forces to zero
-   mVerticalJetForce = 0;
+   // Initialize all the jet states to false
    for (U32 i = 0; i < 4; i++)
-   {
-      mHorizontalJetForces[i] = 0;
       mHorizontalJetStates[i] = false;
-   }
 }
 
 Player::~Player()
@@ -1928,12 +1934,20 @@ bool Player::onNewDataBlock( GameBaseData *dptr, bool reload )
 
       SFX_DELETE( mMoveBubbleSound );
       SFX_DELETE( mWaterBreathSound );
+      SFX_DELETE( mJetSound );
+      SFX_DELETE( mUnderwaterJetSound );
 
       if ( mDataBlock->sound[PlayerData::MoveBubbles] )
          mMoveBubbleSound = SFX->createSource( mDataBlock->sound[PlayerData::MoveBubbles] );
 
       if ( mDataBlock->sound[PlayerData::WaterBreath] )
          mWaterBreathSound = SFX->createSource( mDataBlock->sound[PlayerData::WaterBreath] );
+
+      if ( mDataBlock->sound[PlayerData::Jet] )
+         mJetSound = SFX->createSource( mDataBlock->sound[PlayerData::Jet] );
+
+      if ( mDataBlock->sound[PlayerData::UnderwaterJet] )
+         mUnderwaterJetSound = SFX->createSource( mDataBlock->sound[PlayerData::UnderwaterJet] );
    }
 
    mObjBox.maxExtents.x = mDataBlock->boxSize.x * 0.5f;
@@ -1952,13 +1966,6 @@ bool Player::onNewDataBlock( GameBaseData *dptr, bool reload )
    // Initialize our scaled attributes as well
    onScaleChanged();
    resetWorldBox();
-
-
-   // Reinitialize the jetting system
-   mVerticalJetForce = mDataBlock->jetForce;
-
-   for (U32 i = 0; i < 4; i++)
-        mHorizontalJetForces[i] = 0;
 
    scriptOnNewDataBlock();
    return true;
@@ -2517,79 +2524,6 @@ void Player::allowAllPoses()
    mAllowSwimming = true;
 }
 
-U32 Player::activeHorizontalJetCount(void)
-{
-  U32 result = 0;
-
-  for (U32 i = 0; i < 4; i++)
-     result += mHorizontalJetStates[i];
-
-  return result;
-}
-
-F32 Player::sumHorizontalJetForces(void)
-{
-    F32 result = 0;
-    for (U32 i = 0; i < 4; i++)
-        result += mHorizontalJetForces[i];
-
-    return result;
-}
-
-void Player::distributeJetForce(void)
-{
-   // We move force back to vertical jets if a jet is off
-   for (U32 i = 0; i < 4; i++)
-        if (!mHorizontalJetStates[i] && mHorizontalJetForces[i] > 0)
-        {
-            F32 removedForce = mDataBlock->jetForce * Player::sJetForceDistributionFactor * TickSec;
-            mHorizontalJetForces[i] -= mHorizontalJetForces[i];
-
-            if (mHorizontalJetForces[i] < 0)
-            {
-                removedForce -= -mHorizontalJetForces[i];
-                mHorizontalJetForces[i] = 0;
-            }
-
-            mVerticalJetForce += removedForce;
-        }
-
-   // If we're jetting, we move vertical force to active jets
-   if (mJetting)
-   {
-        // Can we even jet?
-        if (mEnergy < mDataBlock->minJetEnergy)
-            return;
-
-        // Kill some jet energy
-        mEnergy -= mDataBlock->jetEnergyDrain;
-
-        F32 distributedForceTotal = activeHorizontalJetCount() * mDataBlock->jetForce * Player::sJetForceDistributionFactor * TickSec;
-        F32 distributedForce = distributedForceTotal / activeHorizontalJetCount();
-
-        for (U32 i = 0; i < 4; i++)
-            if (mHorizontalJetStates[i])
-                mHorizontalJetForces[i] += distributedForce;
-
-        // Now that we distributed the forces, we should ensure that we're within  max horizontal jet percentage
-        F32 horizontalJetForceSum = sumHorizontalJetForces();
-
-        if (mDataBlock->jetForce / horizontalJetForceSum > mDataBlock->maxJetHorizontalPercentage)
-        {
-            // We've exceeded max percentage
-            F32 maxHorizontalJetForce = mDataBlock->maxJetHorizontalPercentage * mDataBlock->jetForce;
-
-            for (U32 i = 0; i < 4; i++)
-                if (mHorizontalJetForces[i] > maxHorizontalJetForce)
-                    mHorizontalJetForces[i] = maxHorizontalJetForce;
-
-            // We've maxed out our jets, so force the minimum percentage on the vertical jets
-            mVerticalJetForce = mDataBlock->jetForce * (1 - mDataBlock->maxJetHorizontalPercentage);
-        }
-        return;
-   }
-}
-
 void Player::updateMove(const Move* move)
 {
    delta.move = *move;
@@ -3118,23 +3052,45 @@ void Player::updateMove(const Move* move)
    if (move->trigger[sJumpJetTrigger] && !isMounted() && canJet())
    {
       mJetting = true;
+      mEnergy -= mDataBlock->jetEnergyDrain;
+
+      if (!mSwimming)
+      {
+          if (mJetSound && !mJetSound->isPlaying())
+               mJetSound->play();
+          if (mUnderwaterJetSound)
+               mUnderwaterJetSound->stop();
+      }
+      else if (mSwimming)
+      {
+          if (mUnderwaterJetSound && !mUnderwaterJetSound->isPlaying())
+               mUnderwaterJetSound->play();
+          if (mJetSound)
+               mJetSound->stop();
+      }
 
       // Apply jet forces
       MatrixF transform = getTransform();
 
-      mAppliedForce.z += mVerticalJetForce / 5 * 18;
+      if (mJetSound)
+          mJetSound->setTransform(transform);
+      if (mUnderwaterJetSound)
+          mJetSound->setTransform(transform);
+
+      if (!mHorizontalJetStates[0] && !mHorizontalJetStates[1] && !mHorizontalJetStates[2] && !mHorizontalJetStates[3])
+          mAppliedForce.z += mDataBlock->jetForce;
 
       if (mHorizontalJetStates[0])
-        mAppliedForce += -transform.getRightVector() * (mHorizontalJetForces[0] / 5 * 18);
+        mAppliedForce += -transform.getRightVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
 
       if (mHorizontalJetStates[1])
-        mAppliedForce += transform.getRightVector() * (mHorizontalJetForces[1] / 5 * 18);
+        mAppliedForce += transform.getRightVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
 
       if (mHorizontalJetStates[2])
-        mAppliedForce += -transform.getForwardVector() * (mHorizontalJetForces[2] / 5 * 18);
+        mAppliedForce += -transform.getForwardVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
 
       if (mHorizontalJetStates[3])
-        mAppliedForce += transform.getForwardVector() * (mHorizontalJetForces[3] / 5 * 18);
+        mAppliedForce += transform.getForwardVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
 
       // Calculate the jet states
       mHorizontalJetStates[0] = move->x < 0; // Jetting Left
@@ -3205,12 +3161,14 @@ void Player::updateMove(const Move* move)
    {
       mJetting = false;
 
+      if (mJetSound)
+          mJetSound->stop();
+      if (mUnderwaterJetSound)
+          mUnderwaterJetSound->stop();
+
       for (U32 i = 0; i < 4; i++)
          mHorizontalJetStates[i] = false;
    }
-
-   // Accounts for distribution to and from horizontal jets
-   distributeJetForce();
 
    // Add in force from physical zones...
    acc += (mAppliedForce / getMass()) * TickSec;
