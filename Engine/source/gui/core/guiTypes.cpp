@@ -316,8 +316,9 @@ GuiControlProfile::GuiControlProfile(void) :
    mMouseOverSelected = false;
    
    // bitmap members
-   mBitmapName = NULL;
-   mUseBitmapArray = false;
+   mBitmapName="gui/darkScroll";
+   mUseBitmapArray=true;
+   //mUseBitmapArray = false;
    mTextureObject = NULL; // initialized in incLoadCount()
 
    mChildrenProfileName = NULL;
@@ -452,7 +453,7 @@ void GuiControlProfile::initPersistFields()
    endGroup( "Text" );
    
    addGroup( "Misc" );
-
+   
       addProtectedField( "bitmap", TypeFilename,  Offset(mBitmapName, GuiControlProfile),
          &GuiControlProfile::protectedSetBitmap, &defaultProtectedGetFn,
          "Texture to use for rendering control." );
@@ -482,7 +483,7 @@ bool GuiControlProfile::onAdd()
       return false;
 
    Sim::getGuiDataGroup()->addObject(this);
-   
+
    // Make sure we have an up-to-date children profile
    getChildrenProfile();
 
@@ -560,6 +561,7 @@ S32 GuiControlProfile::constructBitmapArray()
 {
    if(mBitmapArrayRects.size())
       return mBitmapArrayRects.size();
+
 
    if( mTextureObject.isNull() )
    {   

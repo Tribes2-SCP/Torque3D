@@ -121,8 +121,8 @@ Resource<GFont> GFont::create(const String &faceName, U32 size, const char *cach
    if( !cacheDirectory )
       cacheDirectory = Con::getVariable( "$GUI::fontCacheDirectory" );
       
-   const Torque::Path   path( String::ToString("%s/%s %d (%s).uft",
-      cacheDirectory, faceName.c_str(), size, getCharSetName(charset)) );
+   const Torque::Path   path( String::ToString("fonts/%s_%d.gft",
+      faceName.c_str(), size) );
 
    Resource<GFont> ret;
 
