@@ -522,6 +522,15 @@ bool PlayerData::preload(bool server, String &errorStr)
       recoilSequence[0] = mShape->findSequence("light_recoil");
       recoilSequence[1] = mShape->findSequence("medium_recoil");
       recoilSequence[2] = mShape->findSequence("heavy_recoil");
+
+      // Process the player shape for jet nozzles
+      S32 jetNozzleCount = 0;
+      S32 currentNodeIndex = -1;
+      while (++currentNodeIndex != -1)
+      {
+      }
+
+      Con::warnf("PlayerData:: Found %u jet nozzles", jetNozzleCount);
    }
 
    // Convert pickupRadius to a delta of boundingBox
@@ -1672,8 +1681,6 @@ Player::Player()
    mLastAbsoluteYaw = 0.0f;
    mLastAbsolutePitch = 0.0f;
    mLastAbsoluteRoll = 0.0f;
-
-   mLiftoffDustEmitter = NULL;
 
    // Initialize all the jet states to false
    for (U32 i = 0; i < 4; i++)

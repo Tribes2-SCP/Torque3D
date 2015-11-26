@@ -160,6 +160,8 @@ struct PlayerData: public ShapeBaseData {
    F32 jetEnergyDrain;
    F32 minJetEnergy;
    F32 maxJetHorizontalPercentage;
+
+   Vector<S32> mJetNozzleIndices;
    /// @}
 
    /// @name Hitboxes
@@ -589,7 +591,6 @@ protected:
 
    // Jetting
    bool mJetting;
-   ParticleEmitter* mLiftoffDustEmitter;
    SFXSource* mJetSound;
    SFXSource* mUnderwaterJetSound;
 
