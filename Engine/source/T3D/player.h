@@ -318,6 +318,8 @@ struct PlayerData: public ShapeBaseData {
 
    ParticleEmitterData * dustEmitter;
    S32 dustID;
+   ParticleEmitterData * jetEmitter;
+   S32 jetID;
 
    SplashData* splash;
    S32 splashId;

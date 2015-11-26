@@ -384,6 +384,7 @@ PlayerData::PlayerData()
    footPuffRadius = .25f;
 
    dustEmitter = NULL;
+   jetEmitter = NULL;
    dustID = 0;
 
    splash = NULL;
@@ -524,13 +525,15 @@ bool PlayerData::preload(bool server, String &errorStr)
       recoilSequence[2] = mShape->findSequence("heavy_recoil");
 
       // Process the player shape for jet nozzles
-      S32 jetNozzleCount = 0;
-      S32 currentNodeIndex = -1;
-      while (++currentNodeIndex != -1)
-      {
-      }
+      // FIXME: Case sensitivity?
+      Vector<S32> nodeIDs;
+      mShape->getNodeObjects(-1, nodeIDs);
 
-      Con::warnf("PlayerData:: Found %u jet nozzles", jetNozzleCount);
+      for (S32 iteration = 0; iteration < nodeIDs.size(); iteration++)
+          if (mShape->getNodeName(nodeIDs[iteration]).find("Jetnozzle") != String::NPos)
+               mJetNozzleIndices.push_back(nodeIDs[iteration]);
+
+      Con::warnf("PlayerData:: Found %u jet nozzles", mJetNozzleIndices.size());
    }
 
    // Convert pickupRadius to a delta of boundingBox
@@ -562,6 +565,10 @@ bool PlayerData::preload(bool server, String &errorStr)
    if (!dustEmitter && dustID != 0 )
       if (!Sim::findObject(dustID, dustEmitter))
          Con::errorf(ConsoleLogEntry::General, "PlayerData::preload - Invalid packet, bad datablockId(dustEmitter): 0x%x", dustID);
+
+   if (!jetEmitter && jetID != 0 )
+      if (!Sim::findObject(jetID, jetEmitter))
+         Con::errorf(ConsoleLogEntry::General, "PlayerData::preload - Invalid packet, bad datablockId(jetEmitter): 0x%x", jetID);
 
    for (S32 i=0; i<NUM_SPLASH_EMITTERS; i++)
       if( !splashEmitterList[i] && splashEmitterIDList[i] != 0 )
@@ -1086,6 +1093,9 @@ void PlayerData::initPersistFields()
          addField( "underwaterJetSound", TypeSFXTrackName, Offset(sound[UnderwaterJet], PlayerData),
          "@brief Sound to play when the player is jetting and is underwater.\n\n");
 
+          addField( "jetEmitter", TYPEID< ParticleEmitterData >(), Offset(jetEmitter, PlayerData),
+         "@brief Emitter used to generate jetting particles.\n\n");
+
    addGroup( "Sounds: Jetting" );
 
    addGroup( "Interaction: Splashes" );
@@ -1331,6 +1341,11 @@ void PlayerData::packData(BitStream* stream)
    if( stream->writeFlag( dustEmitter ) )
    {
       stream->writeRangedU32( dustEmitter->getId(), DataBlockObjectIdFirst,  DataBlockObjectIdLast );
+   }
+
+   if( stream->writeFlag( jetEmitter ) )
+   {
+      stream->writeRangedU32( jetEmitter->getId(), DataBlockObjectIdFirst,  DataBlockObjectIdLast );
    }
 
 
@@ -3105,7 +3120,7 @@ void Player::updateMove(const Move* move)
       mHorizontalJetStates[2] = move->y < 0; // Jetting Back
       mHorizontalJetStates[3] = move->y > 0; // Jetting Forward
 
-      // Do the jet emitter
+      // Do the jet dust emitter
       RayInfo rayCast;
 
       // FIXME: Don't recreate the dust emitter every tick
@@ -3134,35 +3149,31 @@ void Player::updateMove(const Move* move)
           }
       }
 
-/*
-         // New emitter every time for visibility reasons
-               ParticleEmitter * emitter = new ParticleEmitter;
-               emitter->onNewDataBlock( mDataBlock->footPuffEmitter, false );
+      // Do the jet particles
+      if (mDataBlock->jetEmitter)
+           for (S32 iteration = 0; iteration < mDataBlock->mJetNozzleIndices.size(); iteration++)
+           {
+               ParticleEmitter* emitter = new ParticleEmitter;
+               emitter->onNewDataBlock(mDataBlock->jetEmitter, false);
 
-               ColorF colorList[ ParticleData::PDC_NUM_KEYS];
-
-               for( U32 x = 0; x < getMin( Material::NUM_EFFECT_COLOR_STAGES, ParticleData::PDC_NUM_KEYS ); ++ x )
-                  colorList[ x ].set( material->mEffectColor[ x ].red,
-                                      material->mEffectColor[ x ].green,
-                                      material->mEffectColor[ x ].blue,
-                                      material->mEffectColor[ x ].alpha );
-               for( U32 x = Material::NUM_EFFECT_COLOR_STAGES; x < ParticleData::PDC_NUM_KEYS; ++ x )
-                  colorList[ x ].set( 1.0, 1.0, 1.0, 0.0 );
-
-               if( !emitter->registerObject() )
+               if (!emitter->registerObject())
                {
-                  Con::warnf( ConsoleLogEntry::General, "Could not register emitter for particle of class: %s", mDataBlock->getName() );
-                  delete emitter;
-                  emitter = NULL;
+                    Con::warnf( ConsoleLogEntry::General, "Could not register emitter for particle of class: %s", mDataBlock->getName() );
+                    delete emitter;
                }
                else
                {
-                  emitter->emitParticles( pos, Point3F( 0.0, 0.0, 1.0 ), mDataBlock->footPuffRadius,
-                     Point3F( 0, 0, 0 ), mDataBlock->footPuffNumParts );
-                  emitter->deleteWhenEmpty();
+                    ColorF colorList[ ParticleData::PDC_NUM_KEYS];
+                    for (U32 i = 0; i < ParticleData::PDC_NUM_KEYS; i++)
+                         colorList[i] = ColorF(1, 1, 1, 1);
+                    emitter->setColors( colorList );
+
+                    MatrixF nodeTransform;
+                    mDataBlock->mShape->getNodeWorldTransform(mDataBlock->mJetNozzleIndices[iteration], &nodeTransform);
+                    emitter->emitParticles(transform.getPosition() + nodeTransform.getPosition(), false, nodeTransform.getForwardVector(), mVelocity, mDataBlock->dustEmitter->lifetimeMS);
+                    emitter->deleteWhenEmpty();
                }
-            }
-*/
+           }
    }
    else
    {
