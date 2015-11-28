@@ -160,6 +160,7 @@ struct PlayerData: public ShapeBaseData {
    F32 jetEnergyDrain;
    F32 minJetEnergy;
    F32 maxJetHorizontalPercentage;
+   F32 maxJetForwardSpeed;
 
    Vector<S32> mJetNozzleIndices;
    /// @}
@@ -482,6 +483,13 @@ protected:
    SimObjectPtr<ShapeBase> mControlObject; ///< Controlling object
 
    /// Player Jet state data
+   enum JetDirection
+   {
+      JetLeft,
+      JetRight,
+      JetBack,
+      JetForward
+   };
    bool mHorizontalJetStates[4];
 
    /// @name Animation threads & data

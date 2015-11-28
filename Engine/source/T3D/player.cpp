@@ -340,6 +340,7 @@ PlayerData::PlayerData()
    underwaterJetEnergyDrain = 0;
    minJetEnergy = 1;
    maxJetHorizontalPercentage = 0.8;
+   maxJetForwardSpeed = 20;
 
    horizMaxSpeed = 80.0f;
    horizResistSpeed = 38.0f;
@@ -921,6 +922,9 @@ void PlayerData::initPersistFields()
          "@see jetForce\n"
          "@see underwaterJetForce"
          );
+
+       addField( "maxJetForwardSpeed", TypeF32, Offset(maxJetForwardSpeed, PlayerData),
+         "@brief The maximum possible speed for jetting forward.\n\n");
 
 
    endGroup( "Movement: Jetting" );
@@ -3119,37 +3123,38 @@ void Player::updateMove(const Move* move)
 
       F32 jetForce = mSwimming ? mDataBlock->underwaterJetForce : mDataBlock->jetForce;
 
-      bool atMaxJetHorizontalPercentage = false;
-      bool applyingHorizontalJets = mHorizontalJetStates[0] || mHorizontalJetStates[1] || mHorizontalJetStates[2] || mHorizontalJetStates[3];
+      // Calculate the jet button states
+      mHorizontalJetStates[JetLeft] = move->x < 0;
+      mHorizontalJetStates[JetRight] = move->x > 0;
+      mHorizontalJetStates[JetBack] = move->y < 0;
+      mHorizontalJetStates[JetForward] = move->y > 0;
+
       F32 horizontalVelocity = Point2F(mVelocity.x, mVelocity.y).len();
-      if (applyingHorizontalJets && horizontalVelocity * mDataBlock->maxJetHorizontalPercentage > mDataBlock->maxForwardSpeed)
-      {
-          atMaxJetHorizontalPercentage = true;
-          applyingHorizontalJets = false;
-      }
+      Point3F jetVector(0, 0, 0);
+      if (mHorizontalJetStates[JetLeft])
+          jetVector += -transform.getRightVector();
+      if (mHorizontalJetStates[JetRight])
+          jetVector += transform.getRightVector();
+      if (mHorizontalJetStates[JetBack])
+          jetVector += -transform.getForwardVector();
+      if (mHorizontalJetStates[JetForward])
+          jetVector += transform.getForwardVector();
 
-      if (!applyingHorizontalJets)
-          mAppliedForce.z += jetForce;
-      else if (applyingHorizontalJets)
-      {
-          if (mHorizontalJetStates[0])
-               mAppliedForce += -transform.getRightVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
+      jetVector.normalize();
+      jetVector *= mDataBlock->maxJetHorizontalPercentage;
 
-          if (mHorizontalJetStates[1])
-               mAppliedForce += transform.getRightVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
+      // Do some rotation
+      const Point2F jetPlane(1, 0);
+      const Point2F flatJetVector(jetVector.x, jetVector.y);
+      F32 angle = mAcos(mDot(jetPlane, flatJetVector));
 
-          if (mHorizontalJetStates[2])
-               mAppliedForce += -transform.getForwardVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
+      F32 speedInDesiredDirection = mVelocity.x * mCos(angle) - mVelocity.y * mSin(angle);
+    //  jetVector *= 1 - speedInDesiredDirection / mDataBlock->maxJetForwardSpeed;
 
-          if (mHorizontalJetStates[3])
-               mAppliedForce += transform.getForwardVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
-      }
+      jetVector.z = 1 - mDataBlock->maxJetHorizontalPercentage;
+      jetVector.normalize();
 
-      // Calculate the jet states
-      mHorizontalJetStates[0] = move->x < 0; // Jetting Left
-      mHorizontalJetStates[1] = move->x > 0; // Jetting Right
-      mHorizontalJetStates[2] = move->y < 0; // Jetting Back
-      mHorizontalJetStates[3] = move->y > 0; // Jetting Forward
+      mAppliedForce += jetVector * jetForce;
 
       // Do the jet dust emitter
       RayInfo rayCast;
