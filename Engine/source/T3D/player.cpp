@@ -269,7 +269,7 @@ PlayerData::PlayerData()
    minLookAngle = -1.4f;
    maxLookAngle = 1.4f;
    maxFreelookAngle = 3.0f;
-   maxTimeScale = 1.5f;
+   maxTimeScale = 0.9f; // Changed default from 1.5 to 0.9 because Tribes 2 DB's will not have this specified and this appears to replicate T2 animation speeds
 
    mass = 9.0f;         // from ShapeBase
    maxEnergy = 60.0f;   // from ShapeBase
@@ -810,6 +810,7 @@ void PlayerData::initPersistFields()
          "@brief Amount of movement control the player has when in the air.\n\n"
          "This is applied as a multiplier to the player's x and y motion.\n");
       addField( "jumpTowardsNormal", TypeBool, Offset(jumpTowardsNormal, PlayerData),
+         "@brief Controls the direction of the jump impulse.\n"
          "@brief Controls the direction of the jump impulse.\n"
          "When false, jumps are always in the vertical (+Z) direction. When true "
          "jumps are in the direction of the ground normal so long as the player is not "
@@ -1893,6 +1894,17 @@ bool Player::onNewDataBlock( GameBaseData *dptr, bool reload )
    }
    else
       mHeadHThread = 0;
+
+   // Initialize Jetting thread
+   S32 jetFlareSeq = shape->findSequence("JetFlare");
+   if (jetFlareSeq != -1)
+   {
+     mJetFlareThread = mShapeInstance->addThread();
+     mShapeInstance->setSequence(mJetFlareThread, jetFlareSeq, 0);
+     mShapeInstance->setTimeScale(mJetFlareThread, 0);
+   }
+   else
+     mJetFlareThread = 0;
 
    // Create Recoil thread if any recoil sequences are specified.
    // Note that the server player does not play this animation.
@@ -3076,6 +3088,12 @@ void Player::updateMove(const Move* move)
       mJetting = true;
       mEnergy -= mDataBlock->jetEnergyDrain;
 
+      if (mJetFlareThread)
+      {
+          mShapeInstance->setSequence(mJetFlareThread, 0, 0);
+          mShapeInstance->setTimeScale(mJetFlareThread, 1);
+      }
+
       if (!mSwimming)
       {
           if (mJetSound && !mJetSound->isPlaying())
@@ -3099,20 +3117,33 @@ void Player::updateMove(const Move* move)
       if (mUnderwaterJetSound)
           mJetSound->setTransform(transform);
 
-      if (!mHorizontalJetStates[0] && !mHorizontalJetStates[1] && !mHorizontalJetStates[2] && !mHorizontalJetStates[3])
-          mAppliedForce.z += mDataBlock->jetForce;
+      F32 jetForce = mSwimming ? mDataBlock->underwaterJetForce : mDataBlock->jetForce;
 
-      if (mHorizontalJetStates[0])
-        mAppliedForce += -transform.getRightVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
+      bool atMaxJetHorizontalPercentage = false;
+      bool applyingHorizontalJets = mHorizontalJetStates[0] || mHorizontalJetStates[1] || mHorizontalJetStates[2] || mHorizontalJetStates[3];
+      F32 horizontalVelocity = Point2F(mVelocity.x, mVelocity.y).len();
+      if (applyingHorizontalJets && horizontalVelocity * mDataBlock->maxJetHorizontalPercentage > mDataBlock->maxForwardSpeed)
+      {
+          atMaxJetHorizontalPercentage = true;
+          applyingHorizontalJets = false;
+      }
 
-      if (mHorizontalJetStates[1])
-        mAppliedForce += transform.getRightVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
+      if (!applyingHorizontalJets)
+          mAppliedForce.z += jetForce;
+      else if (applyingHorizontalJets)
+      {
+          if (mHorizontalJetStates[0])
+               mAppliedForce += -transform.getRightVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
 
-      if (mHorizontalJetStates[2])
-        mAppliedForce += -transform.getForwardVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
+          if (mHorizontalJetStates[1])
+               mAppliedForce += transform.getRightVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
 
-      if (mHorizontalJetStates[3])
-        mAppliedForce += transform.getForwardVector() * mDataBlock->jetForce * mDataBlock->maxJetHorizontalPercentage;
+          if (mHorizontalJetStates[2])
+               mAppliedForce += -transform.getForwardVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
+
+          if (mHorizontalJetStates[3])
+               mAppliedForce += transform.getForwardVector() * jetForce * mDataBlock->maxJetHorizontalPercentage;
+      }
 
       // Calculate the jet states
       mHorizontalJetStates[0] = move->x < 0; // Jetting Left
@@ -3170,7 +3201,9 @@ void Player::updateMove(const Move* move)
 
                     MatrixF nodeTransform;
                     mDataBlock->mShape->getNodeWorldTransform(mDataBlock->mJetNozzleIndices[iteration], &nodeTransform);
-                    emitter->emitParticles(transform.getPosition() + nodeTransform.getPosition(), false, nodeTransform.getForwardVector(), mVelocity, mDataBlock->dustEmitter->lifetimeMS);
+                //    emitter->emitParticles(transform.getPosition() + nodeTransform.getPosition(), false, nodeTransform.getForwardVector(), mVelocity, mDataBlock->dustEmitter->lifetimeMS);
+                    emitter->emitParticles(transform.getPosition() + nodeTransform.getPosition(), nodeTransform.getForwardVector(), 0, mVelocity, 10);
+
                     emitter->deleteWhenEmpty();
                }
            }
@@ -4612,6 +4645,8 @@ void Player::updateAnimation(F32 dt)
       mShapeInstance->advanceTime(dt,mRecoilThread);
    if (mImageStateThread)
       mShapeInstance->advanceTime(dt,mImageStateThread);
+   if (mJetFlareThread)
+      mShapeInstance->advanceTime(dt, mJetFlareThread);
 
    // If we are the client's player on this machine, then we need
    // to make sure the transforms are up to date as they are used

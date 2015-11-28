@@ -596,6 +596,8 @@ protected:
    SFXSource* mJetSound;
    SFXSource* mUnderwaterJetSound;
 
+   TSThread* mJetFlareThread;
+
    ///Update the movement
    virtual void updateMove(const Move *move);
 
