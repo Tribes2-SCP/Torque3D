@@ -334,6 +334,7 @@ PlayerData::PlayerData()
    maxProneSideSpeed = 0.0f;
 
    // Jetting
+   jetID = 0;
    jetForce = 0;
    jetEnergyDrain = 0;
    underwaterJetForce = 0;
