@@ -1535,7 +1535,7 @@ void PlayerData::unpackData(BitStream* stream)
    {
       dustID = (S32) stream->readRangedU32(DataBlockObjectIdFirst, DataBlockObjectIdLast);
    }
-   
+
    if (stream->readFlag()) {
       jetID = stream->readRangedU32( DataBlockObjectIdFirst, DataBlockObjectIdLast );
    }
@@ -3126,6 +3126,7 @@ void Player::updateMove(const Move* move)
           mJetSound->setTransform(transform);
 
       F32 jetForce = mSwimming ? mDataBlock->underwaterJetForce : mDataBlock->jetForce;
+      jetForce -= jetForce * 0.25;
 
       // Calculate the jet button states
       mHorizontalJetStates[JetLeft] = move->x < 0;
@@ -3147,13 +3148,25 @@ void Player::updateMove(const Move* move)
       jetVector.normalize();
       jetVector *= mDataBlock->maxJetHorizontalPercentage;
 
-      // Do some rotation
+      // Here we rotate our velocity about a common plane to figure out the distance
+      // it travels across our desired jet vector -- in other words, how fast are we actually
+      // moving in the direction we're trying to move?
       const Point2F jetPlane(1, 0);
       const Point2F flatJetVector(jetVector.x, jetVector.y);
+      const Point2F flatVelocity(mVelocity.x, mVelocity.y);
       F32 angle = mAcos(mDot(jetPlane, flatJetVector));
 
       F32 speedInDesiredDirection = mVelocity.x * mCos(angle) - mVelocity.y * mSin(angle);
-    //  jetVector *= 1 - speedInDesiredDirection / mDataBlock->maxJetForwardSpeed;
+         //  speedInDesiredDirection = speedInDesiredDirection < 0 ? -speedInDesiredDirection : speedInDesiredDirection;
+
+    //  F32 speedInDesiredDirection = mDot(flatVelocity , flatJetVector * mDataBlock->maxJetForwardSpeed ) / flatJetVector.len();
+
+      Con::errorf("Moving at %f in desired jet dir", speedInDesiredDirection);
+
+     // jetVector *= mDataBlock->maxJetHorizontalPercentage;
+
+      if (speedInDesiredDirection > mDataBlock->maxJetForwardSpeed)
+          jetVector.x = jetVector.y = 0;
 
       jetVector.z = 1 - mDataBlock->maxJetHorizontalPercentage;
       jetVector.normalize();
