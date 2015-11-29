@@ -1535,7 +1535,10 @@ void PlayerData::unpackData(BitStream* stream)
    {
       dustID = (S32) stream->readRangedU32(DataBlockObjectIdFirst, DataBlockObjectIdLast);
    }
-
+   
+   if (stream->readFlag()) {
+      jetID = stream->readRangedU32( DataBlockObjectIdFirst, DataBlockObjectIdLast );
+   }
 
    if (stream->readFlag())
    {
