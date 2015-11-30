@@ -50,22 +50,16 @@
 #include "console/engineAPI.h"
 #include "T3D/accumulationVolume.h"
 
-ResourceBase getTSStaticShapeResource(const char * path) 
+ResourceBase getTSStaticShapeResource(const char * path)
 {
 		char newName[1024]="";
 		strcat(newName,"shapes/");
 		strncat(newName,path,500);
-		Resource<TSShape> shape=NULL;
-		shape = ResourceManager::get().load(newName);
-		if (shape) {
-			return shape;
-		} else {
+		Resource<TSShape> shape = ResourceManager::get().load(newName);
+		if (!shape) {
 			shape = ResourceManager::get().load(path);
-			if (shape) {
-				return shape;
-			}
 		}
-    return NULL;
+    return shape;
 
 }
 
@@ -197,10 +191,10 @@ void TSStatic::initPersistFields()
 
       addField( "playAmbient",   TypeBool,   Offset( mPlayAmbient, TSStatic ),
          "Enables automatic playing of the animation sequence named \"ambient\" (if it exists) when the TSStatic is loaded.");
-      addField( "meshCulling",   TypeBool,   Offset( mMeshCulling, TSStatic ), 
+      addField( "meshCulling",   TypeBool,   Offset( mMeshCulling, TSStatic ),
          "Enables detailed culling of meshes within the TSStatic. Should only be used "
          "with large complex shapes like buildings which contain many submeshes." );
-      addField( "originSort",    TypeBool,   Offset( mUseOriginSort, TSStatic ), 
+      addField( "originSort",    TypeBool,   Offset( mUseOriginSort, TSStatic ),
          "Enables translucent sorting of the TSStatic by its origin instead of the bounds." );
 
    endGroup("Rendering");
@@ -211,17 +205,17 @@ void TSStatic::initPersistFields()
          "The type of mesh data to use for collision queries." );
       addField( "decalType",        TypeTSMeshType,   Offset( mDecalType,   TSStatic ),
          "The type of mesh data used to clip decal polygons against." );
-      addField( "allowPlayerStep",  TypeBool,         Offset( mAllowPlayerStep, TSStatic ), 
+      addField( "allowPlayerStep",  TypeBool,         Offset( mAllowPlayerStep, TSStatic ),
          "@brief Allow a Player to walk up sloping polygons in the TSStatic (based on the collisionType).\n\n"
          "When set to false, the slightest bump will stop the player from walking on top of the object.\n");
-   
+
    endGroup("Collision");
 
-   addGroup( "AlphaFade" );  
-      addField( "alphaFadeEnable",   TypeBool,   Offset(mUseAlphaFade,    TSStatic), "Turn on/off Alpha Fade" );  
-      addField( "alphaFadeStart",    TypeF32,    Offset(mAlphaFadeStart,  TSStatic), "Distance of start Alpha Fade" );  
-      addField( "alphaFadeEnd",      TypeF32,    Offset(mAlphaFadeEnd,    TSStatic), "Distance of end Alpha Fade" );  
-      addField( "alphaFadeInverse", TypeBool,    Offset(mInvertAlphaFade, TSStatic), "Invert Alpha Fade's Start & End Distance" );  
+   addGroup( "AlphaFade" );
+      addField( "alphaFadeEnable",   TypeBool,   Offset(mUseAlphaFade,    TSStatic), "Turn on/off Alpha Fade" );
+      addField( "alphaFadeStart",    TypeF32,    Offset(mAlphaFadeStart,  TSStatic), "Distance of start Alpha Fade" );
+      addField( "alphaFadeEnd",      TypeF32,    Offset(mAlphaFadeEnd,    TSStatic), "Distance of end Alpha Fade" );
+      addField( "alphaFadeInverse", TypeBool,    Offset(mInvertAlphaFade, TSStatic), "Invert Alpha Fade's Start & End Distance" );
    endGroup( "AlphaFade" );
 
    addGroup("Debug");
@@ -255,7 +249,7 @@ void TSStatic::inspectPostApply()
    // Apply any transformations set in the editor
    Parent::inspectPostApply();
 
-   if(isServerObject()) 
+   if(isServerObject())
    {
       setMaskBits(AdvancedStaticOptionsMask);
       prepCollision();
@@ -316,7 +310,7 @@ bool TSStatic::onAdd()
    // Accumulation
    if ( isClientObject() && mShapeInstance )
    {
-      if ( mShapeInstance->hasAccumulation() ) 
+      if ( mShapeInstance->hasAccumulation() )
          AccumulationVolume::addObject(this);
    }
 
@@ -333,7 +327,7 @@ bool TSStatic::_createShape()
    mAmbientThread = NULL;
    mShape = NULL;
 
-   if (!mShapeName || mShapeName[0] == '\0') 
+   if (!mShapeName || mShapeName[0] == '\0')
    {
       Con::errorf( "TSStatic::_createShape() - No shape name!" );
       return false;
@@ -348,8 +342,8 @@ bool TSStatic::_createShape()
       return false;
    }
 
-   if (  isClientObject() && 
-         !mShape->preloadMaterialList(mShape.getPath()) && 
+   if (  isClientObject() &&
+         !mShape->preloadMaterialList(mShape.getPath()) &&
          NetConnection::filesWereDownloaded() )
       return false;
 
@@ -412,7 +406,7 @@ void TSStatic::_updatePhysics()
       MatrixF offset( true );
       offset.setPosition( mShape->center );
       colShape = PHYSICSMGR->createCollision();
-      colShape->addBox( getObjBox().getExtents() * 0.5f * mObjScale, offset );         
+      colShape->addBox( getObjBox().getExtents() * 0.5f * mObjScale, offset );
    }
    else
       colShape = mShape->buildColShape( mCollisionType == VisibleMesh, getScale() );
@@ -433,7 +427,7 @@ void TSStatic::onRemove()
    // Accumulation
    if ( isClientObject() && mShapeInstance )
    {
-      if ( mShapeInstance->hasAccumulation() ) 
+      if ( mShapeInstance->hasAccumulation() )
          AccumulationVolume::removeObject(this);
    }
 
@@ -456,7 +450,7 @@ void TSStatic::_onResourceChanged( const Torque::Path &path )
 {
    if ( path != Path( mShapeName ) )
       return;
-   
+
    _createShape();
    _updateShouldTick();
 }
@@ -494,7 +488,7 @@ void TSStatic::reSkin()
          String newSkin( skins[i] );
 
          // Check if the skin handle contains an explicit "old" base string. This
-         // allows all models to support skinning, even if they don't follow the 
+         // allows all models to support skinning, even if they don't follow the
          // "base_xxx" material naming convention.
          S32 split = newSkin.find( '=' );    // "old=new" format skin?
          if ( split != String::NPos )
@@ -524,7 +518,7 @@ void TSStatic::interpolateTick( F32 delta )
 void TSStatic::advanceTime( F32 dt )
 {
    AssertFatal( mPlayAmbient && mAmbientThread, "TSSTatic::advanceTime called with nothing to play." );
-   
+
    mShapeInstance->advanceTime( dt, mAmbientThread );
 }
 
@@ -578,7 +572,7 @@ void TSStatic::prepRenderImage( SceneRenderState* state )
       }
    }
 
-   F32 invScale = (1.0f/getMax(getMax(mObjScale.x,mObjScale.y),mObjScale.z));   
+   F32 invScale = (1.0f/getMax(getMax(mObjScale.x,mObjScale.y),mObjScale.z));
 
    if ( mForceDetail == -1 )
       mShapeInstance->setDetailFromDistance( state, dist * invScale );
@@ -589,7 +583,7 @@ void TSStatic::prepRenderImage( SceneRenderState* state )
       return;
 
    GFXTransformSaver saver;
-   
+
    // Set up our TS render state.
    TSRenderState rdata;
    rdata.setSceneState( state );
@@ -630,7 +624,7 @@ void TSStatic::prepRenderImage( SceneRenderState* state )
       {
          mShapeInstance->setAlphaAlways(mAlphaFade);
          S32 s = mShapeInstance->mMeshObjects.size();
-         
+
          for(S32 x = 0; x < s; x++)
          {
             mShapeInstance->mMeshObjects[x].visible = mAlphaFade;
@@ -689,7 +683,7 @@ void TSStatic::setTransform(const MatrixF & mat)
    // Accumulation
    if ( isClientObject() && mShapeInstance )
    {
-      if ( mShapeInstance->hasAccumulation() ) 
+      if ( mShapeInstance->hasAccumulation() )
          AccumulationVolume::updateObject(this);
    }
 
@@ -724,12 +718,12 @@ U32 TSStatic::packUpdate(NetConnection *con, U32 mask, BitStream *stream)
 
    stream->writeFlag( mPlayAmbient );
 
-   if ( stream->writeFlag(mUseAlphaFade) )  
-   {  
-      stream->write(mAlphaFadeStart);  
-      stream->write(mAlphaFadeEnd);  
-      stream->write(mInvertAlphaFade);  
-   } 
+   if ( stream->writeFlag(mUseAlphaFade) )
+   {
+      stream->write(mAlphaFadeStart);
+      stream->write(mAlphaFadeEnd);
+      stream->write(mInvertAlphaFade);
+   }
 
    if ( mLightPlugin )
       retMask |= mLightPlugin->packUpdate(this, AdvancedStaticOptionsMask, con, mask, stream);
@@ -779,7 +773,7 @@ void TSStatic::unpackUpdate(NetConnection *con, BitStream *stream)
    stream->read( (U32*)&mDecalType );
 
    mAllowPlayerStep = stream->readFlag();
-   mMeshCulling = stream->readFlag();   
+   mMeshCulling = stream->readFlag();
    mUseOriginSort = stream->readFlag();
 
    stream->read( &mRenderNormalScalar );
@@ -788,12 +782,12 @@ void TSStatic::unpackUpdate(NetConnection *con, BitStream *stream)
 
    mPlayAmbient = stream->readFlag();
 
-   mUseAlphaFade = stream->readFlag();  
+   mUseAlphaFade = stream->readFlag();
    if (mUseAlphaFade)
    {
-      stream->read(&mAlphaFadeStart);  
-      stream->read(&mAlphaFadeEnd);  
-      stream->read(&mInvertAlphaFade);  
+      stream->read(&mAlphaFadeStart);
+      stream->read(&mAlphaFadeEnd);
+      stream->read(&mInvertAlphaFade);
    }
 
    if ( mLightPlugin )
@@ -881,7 +875,7 @@ bool TSStatic::buildPolyList(PolyListContext context, AbstractPolyList* polyList
    if ( !mShapeInstance )
       return false;
 
-   // This is safe to set even if we're not outputing 
+   // This is safe to set even if we're not outputing
    polyList->setTransform( &mObjToWorld, mObjScale );
    polyList->setObject( this );
 
