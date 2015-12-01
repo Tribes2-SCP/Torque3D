@@ -149,7 +149,7 @@ class InteriorInstance : public SceneZoneSpace
       /// @param   trigger   Trigger to create a transform for
       /// @param   transform Transform generated (out)
       void _createTriggerTransform(const InteriorResTrigger *trigger, MatrixF *transform);
-
+      void scriptOnAdd();
       // SceneObject.
       virtual bool onSceneAdd();
       virtual void onSceneRemove();
@@ -219,7 +219,7 @@ class InteriorInstance : public SceneZoneSpace
 
       // SimObject.
       DECLARE_CONOBJECT( InteriorInstance );
-
+      DECLARE_CALLBACK( void, onAdd, ( InteriorInstance* obj ) );
       virtual bool onAdd();
       virtual void onRemove();
       virtual void inspectPostApply();
