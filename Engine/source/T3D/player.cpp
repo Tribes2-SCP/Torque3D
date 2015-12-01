@@ -1653,7 +1653,6 @@ Player::Player()
    mJumpSurfaceLastContact = 0;
    mJumpSurfaceNormal.set(0.0f, 0.0f, 1.0f);
    mControlObject = 0;
-   sJetForceDistributionFactor = 0.1;
    dMemset( mSplashEmitter, 0, sizeof( mSplashEmitter ) );
 
    mUseHeadZCalc = true;

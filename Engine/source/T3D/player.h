@@ -162,10 +162,6 @@ struct PlayerData: public ShapeBaseData {
    F32 maxJetHorizontalPercentage;
    F32 maxJetForwardSpeed;
 
-   F32 maxJetForwardSpeed;
-
-   Vector<S32> mJetNozzleIndices;
-
    Vector<S32> mJetNozzleIndices;
    /// @}
 
@@ -612,12 +608,7 @@ protected:
 
    TSThread* mJetFlareThread;
    ParticleEmitter* mLiftoffDustEmitter;
-
-   SFXSource* mJetSound;
-   SFXSource* mUnderwaterJetSound;
-
-   TSThread* mJetFlareThread;
-
+   
    ///Update the movement
    virtual void updateMove(const Move *move);
 
