@@ -1039,7 +1039,8 @@ void ColladaUtils::exportColladaMaterials(TiXmlElement* rootNode, const Optimize
       // If we didn't get a path
       if (diffusePath.getFullPath().isNotEmpty())
          diffuseMap = Torque::Path::MakeRelativePath(diffusePath, colladaFile);
-
+      else
+          Con::errorf("Diffuse Path is Empty\n");
       TiXmlElement* imageNode = new TiXmlElement("image");
       imgLibNode->LinkEndChild(imageNode);
       imageNode->SetAttribute("id", avar("%s-Diffuse", matNames.last().c_str()));
