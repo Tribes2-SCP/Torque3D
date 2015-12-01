@@ -221,7 +221,7 @@ void InteriorInstance::exportToCollada(bool bakeTransform)
 
    // Get our export path
    Torque::Path colladaFile = mInteriorRes.getPath();
-
+   colladaFile.setPath("compat/base/interiors/");
    // Make sure to set our Collada extension
    colladaFile.setExtension("dae");
 

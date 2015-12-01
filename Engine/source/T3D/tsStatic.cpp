@@ -52,14 +52,9 @@
 
 ResourceBase getTSStaticShapeResource(const char * path)
 {
-		char newName[1024]="";
-		strcat(newName,"shapes/");
-		strncat(newName,path,500);
-		Resource<TSShape> shape = ResourceManager::get().load(newName);
-		if (!shape) {
-			shape = ResourceManager::get().load(path);
-		}
-    return shape;
+        return ResourceManager::get().load(path);
+
+
 }
 
 using namespace Torque;
