@@ -83,17 +83,7 @@ ConsoleDocClass( InteriorInstance,
 );
 
 
-IMPLEMENT_CALLBACK( InteriorInstance, onAdd, void, ( InteriorInstance* obj ), ( obj ),
-   "@brief Called when the object is added to the scene.\n\n"
 
-   "@param obj the InteriorInstance object\n\n"
-
-   "@tsexample\n"
-   "function InteriorInstance::onAdd(%obj)\n"
-      "{\n"
-      "   echo(%obj);\n"
-      "};\n\n"
-   "@endtsexample\n" );
 
 static const U32 csgMaxZoneSize = 256;
 static bool sgScopeBoolArray[256];
@@ -185,7 +175,8 @@ void InteriorInstance::scriptOnAdd()
 {
    // Script onAdd() must be called by the leaf class after
    // everything is ready.
-      this->onAdd_callback( this );
+      //this->onAdd_callback( this );
+    Con::executef(this,"onAdd");
 }
 #ifdef TORQUE_COLLADA
 

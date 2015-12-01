@@ -1245,7 +1245,7 @@ void ColladaUtils::exportColladaTriangles(TiXmlElement* meshNode, const Optimize
             const OptimizedPolyList::VertIndex& thirdVertIdx = mesh.mVertexList[thirdIdx];
 
             // Note the reversed winding on the triangles
-            const char* tri = avar("%d %d %d %d %d %d %d %d %d",
+            const char* tri = avar("%d %d %d %d %d %d %d %d %d ",
                                    thirdVertIdx.vertIdx, thirdVertIdx.normalIdx, thirdVertIdx.uv0Idx,
                                    secondVertIdx.vertIdx, secondVertIdx.normalIdx, secondVertIdx.uv0Idx,
                                    firstVertIdx.vertIdx, firstVertIdx.normalIdx, firstVertIdx.uv0Idx);
@@ -1284,7 +1284,7 @@ void ColladaUtils::exportColladaMesh(TiXmlElement* rootNode, const OptimizedPoly
    {
       const Point3F& vert = mesh.mPoints[i];
 
-      TiXmlText* vertText = new TiXmlText(avar("%.4f %.4f %.4f", vert.x, vert.y, vert.z));
+      TiXmlText* vertText = new TiXmlText(avar("%.4f %.4f %.4f ", vert.x, vert.y, vert.z));
       vertsNode->LinkEndChild(vertText);
    }
 
@@ -1327,7 +1327,7 @@ void ColladaUtils::exportColladaMesh(TiXmlElement* rootNode, const OptimizedPoly
    {
       const Point3F& normal = mesh.mNormals[i];
 
-      TiXmlText* normalText = new TiXmlText(avar("%.4f %.4f %.4f", normal.x, normal.y, normal.z));
+      TiXmlText* normalText = new TiXmlText(avar("%.4f %.4f %.4f ", normal.x, normal.y, normal.z));
       normalsNode->LinkEndChild(normalText);
    }
 
@@ -1370,7 +1370,7 @@ void ColladaUtils::exportColladaMesh(TiXmlElement* rootNode, const OptimizedPoly
    {
       const Point2F& uv0 = mesh.mUV0s[i];
 
-      TiXmlText* uv0Text = new TiXmlText(avar("%.4f %.4f", uv0.x, 1.0f - uv0.y));   // COLLADA uvs are upside down compared to Torque
+      TiXmlText* uv0Text = new TiXmlText(avar("%.4f %.4f ", uv0.x, 1.0f - uv0.y));   // COLLADA uvs are upside down compared to Torque
       uv0Node->LinkEndChild(uv0Text);
    }
 

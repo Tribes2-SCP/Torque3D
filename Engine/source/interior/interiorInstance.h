@@ -219,7 +219,6 @@ class InteriorInstance : public SceneZoneSpace
 
       // SimObject.
       DECLARE_CONOBJECT( InteriorInstance );
-      DECLARE_CALLBACK( void, onAdd, ( InteriorInstance* obj ) );
       virtual bool onAdd();
       virtual void onRemove();
       virtual void inspectPostApply();

@@ -175,7 +175,7 @@ bool PlatformAssert::processAssert(Type        assertType,
 //--------------------------------------
 const char* avar(const char *message, ...)
 {
-   static char buffer[4096];
+   char buffer[4096];
    va_list args;
    va_start(args, message);
    dVsprintf(buffer, sizeof(buffer), message, args);
