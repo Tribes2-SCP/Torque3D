@@ -94,7 +94,8 @@ void EngineObject::destroySelf()
       AssertFatal( !getRefCount() || TYPEOF( this )->isDisposable(), "EngineObject::destroySelf - object still referenced!" );
 
    // Call the internal _destroySelf().
-   _destroySelf();
+   if (this)
+       _destroySelf();
 
    // Destruct the object and release it in the pool.
    
