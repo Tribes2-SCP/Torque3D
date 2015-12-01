@@ -563,12 +563,13 @@ void SimObject::unregisterObject()
 
 void SimObject::deleteObject()
 {
-   if (this!=NULL)
+   if (this!=NULL) {
        if (isDeleted())
            return;
        if (isRemoved())
            return;
-       Parent::destroySelf();
+       _destroySelf();
+   }
 }
 
 //-----------------------------------------------------------------------------
