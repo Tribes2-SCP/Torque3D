@@ -758,7 +758,6 @@ void CodeBlock::dumpInstructions( U32 startIp, bool upToReturn )
             bool isSingleton =          code[ip + 4];
             U32  lineNumber  =          code[ip + 5];
             U32 failJump     =          code[ip + 6];
-            
             Con::printf( "%i: OP_CREATE_OBJECT objParent=%s isDataBlock=%i isInternal=%i isSingleton=%i lineNumber=%i failJump=%i",
                ip - 1, objParent, isDataBlock, isInternal, isSingleton, lineNumber, failJump );
 

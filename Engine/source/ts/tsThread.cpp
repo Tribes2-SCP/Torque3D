@@ -147,16 +147,19 @@ void TSThread::getGround(F32 t, MatrixF * pMat)
       p1 = &unitTranslation;
       q1 = &unitRotation;
    }
-
+   if (!(getSequence()->numGroundFrames<=1)){
    // similar to above, ground keyframe number 'frame+1' is actually offset by 'frame'
-   p2 = &mShapeInstance->mShape->groundTranslations[getSequence()->firstGroundFrame + frame];
-   q2 = &mShapeInstance->mShape->groundRotations[getSequence()->firstGroundFrame + frame].getQuatF(&rot2);
-
-   QuatF q;
-   Point3F p;
-   TSTransform::interpolate(*q1,*q2,kpos,&q);
-   TSTransform::interpolate(*p1,*p2,kpos,&p);
-   TSTransform::setMatrix(q,p,pMat);
+	   p2 = &mShapeInstance->mShape->groundTranslations[getSequence()->firstGroundFrame + frame];
+	   q2 = &mShapeInstance->mShape->groundRotations[getSequence()->firstGroundFrame + frame].getQuatF(&rot2);
+	   QuatF q;
+	   Point3F p;
+	   TSTransform::interpolate(*q1,*q2,kpos,&q);
+	   TSTransform::interpolate(*p1,*p2,kpos,&p);
+	   TSTransform::setMatrix(q,p,pMat);
+   } else {
+	   TSTransform::setMatrix(*q1,*p1,pMat);
+   }
+   
 }
 
 void TSThread::setSequence(S32 seq, F32 toPos)

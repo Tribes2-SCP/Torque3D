@@ -105,13 +105,7 @@ S32 Player::smExtendedMoveHeadPosRotIndex = 0;  // The ExtendedMove position/rot
 // Anchor point compression
 const F32 sAnchorMaxDistance = 32.0f;
 
-//
-static U32 sCollisionMoveMask =  TerrainObjectType       |
-                                 WaterObjectType         |
-                                 PlayerObjectType        |
-                                 StaticShapeObjectType   |
-                                 VehicleObjectType       |
-                                 PhysicalZoneObjectType;
+static U32 sCollisionMoveMask =  TerrainObjectType | InteriorObjectType  | WaterObjectType | PlayerObjectType | StaticShapeObjectType | VehicleObjectType | PhysicalZoneObjectType;
 
 static U32 sServerCollisionContactMask = sCollisionMoveMask |
                                          ItemObjectType     |
@@ -1659,6 +1653,7 @@ Player::Player()
    mJumpSurfaceLastContact = 0;
    mJumpSurfaceNormal.set(0.0f, 0.0f, 1.0f);
    mControlObject = 0;
+   sJetForceDistributionFactor = 0.1;
    dMemset( mSplashEmitter, 0, sizeof( mSplashEmitter ) );
 
    mUseHeadZCalc = true;
@@ -3675,7 +3670,8 @@ void Player::updateDeathOffsets()
 
 //----------------------------------------------------------------------------
 
-static const U32 sPlayerConformMask =  StaticShapeObjectType | StaticObjectType | TerrainObjectType;
+static const U32 sPlayerConformMask =  InteriorObjectType|StaticShapeObjectType|
+                                       StaticObjectType|TerrainObjectType;
 
 static void accel(F32& from, F32 to, F32 rate)
 {

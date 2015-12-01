@@ -549,7 +549,7 @@ bool AIPlayer::getAIMove(Move *movePtr)
       // if it hit something.
       RayInfo dummy;
       if (getContainer()->castRay( location, targetLoc,
-            StaticShapeObjectType | StaticObjectType |
+            InteriorObjectType | StaticShapeObjectType | StaticObjectType |
             TerrainObjectType, &dummy)) {
          if (mTargetInLOS) {
             throwCallback( "onTargetExitLOS" );

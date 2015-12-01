@@ -138,7 +138,7 @@ void GuiCrossHairHud::onRender(Point2I offset, const RectI &updateRect)
 
    // Collision info. We're going to be running LOS tests and we
    // don't want to collide with the control object.
-   static U32 losMask = TerrainObjectType | ShapeBaseObjectType;
+   static U32 losMask = TerrainObjectType | InteriorObjectType | ShapeBaseObjectType;
    control->disableCollision();
 
    RayInfo info;

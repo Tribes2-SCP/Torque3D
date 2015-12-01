@@ -44,6 +44,7 @@ class GFXShaderConstHandle;
 class RenderPrePassMgr;
 class PlatformTimer;
 
+class blInteriorSystem;
 class blTerrainSystem;
 
 class BasicLightManager : public LightManager
@@ -120,6 +121,7 @@ protected:
    /// A timer used for tracking update time.
    PlatformTimer *mTimer;
    
+   blInteriorSystem* mInteriorSystem;
    blTerrainSystem* mTerrainSystem;
 
 public:

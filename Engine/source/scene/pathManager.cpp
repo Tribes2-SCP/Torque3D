@@ -25,6 +25,7 @@
 #include "sim/netConnection.h"
 #include "core/stream/bitStream.h"
 #include "scene/simPath.h"
+#include "interior/interiorInstance.h"
 #include "math/mathIO.h"
 #include "scene/sceneRenderState.h"
 #include "scene/sceneManager.h"

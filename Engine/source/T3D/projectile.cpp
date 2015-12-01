@@ -126,9 +126,12 @@ IMPLEMENT_CALLBACK( ProjectileData, onCollision, void, ( Projectile* proj, Scene
 				   "@see Projectile\n"
 				  );
 
-const U32 Projectile::csmStaticCollisionMask =  TerrainObjectType | StaticShapeObjectType;
+const U32 Projectile::csmStaticCollisionMask =  TerrainObjectType    |
+                                                InteriorObjectType   |
+                                                StaticShapeObjectType;
 
-const U32 Projectile::csmDynamicCollisionMask = PlayerObjectType | VehicleObjectType;
+const U32 Projectile::csmDynamicCollisionMask = PlayerObjectType        |
+                                                VehicleObjectType;
 
 const U32 Projectile::csmDamageableMask = Projectile::csmDynamicCollisionMask;
 
@@ -170,7 +173,7 @@ ProjectileData::ProjectileData()
    activateSeq = -1;
    maintainSeq = -1;
 
-   gravityMod = 1.0;
+   gravityMod = 0;
    bounceElasticity = 0.999f;
    bounceFriction = 0.3f;
 
@@ -243,7 +246,12 @@ void ProjectileData::initPersistFields()
       "This value is never modified by the engine.\n\n"
       "@note This value by default is not transmitted between the server and the client.\n\n"
       "@see velInheritFactor");
-   
+   addField("dryVelocity", TypeF32, Offset(muzzleVelocity, ProjectileData),
+      "@brief Amount of velocity the projectile recieves from the \"muzzle\" of the gun.\n\n"
+      "Used with velInheritFactor to determine the initial velocity of the projectile. "
+      "This value is never modified by the engine.\n\n"
+      "@note This value by default is not transmitted between the server and the client.\n\n"
+      "@see velInheritFactor");
    addField("impactForce", TypeF32, Offset(impactForce, ProjectileData));
 
    addProtectedField("lifetime", TypeS32, Offset(lifetime, ProjectileData), &setLifetime, &getScaledValue, 
@@ -251,8 +259,11 @@ void ProjectileData::initPersistFields()
       "Used with fadeDelay to determine the transparency of the projectile at a given time. "
       "A projectile may exist up to a maximum of 131040ms (or 4095 ticks) as defined by Projectile::MaxLivingTicks in the source code."
       "@see fadeDelay");
-
    addProtectedField("armingDelay", TypeS32, Offset(armingDelay, ProjectileData), &setArmingDelay, &getScaledValue, 
+      "@brief Amount of time, in milliseconds, before the projectile will cause damage or explode on impact.\n\n"
+      "This value must be equal to or less than the projectile's lifetime.\n\n"
+      "@see lifetime");
+   addProtectedField("activateDelayMS", TypeS32, Offset(armingDelay, ProjectileData), &setArmingDelay, &getScaledValue, 
       "@brief Amount of time, in milliseconds, before the projectile will cause damage or explode on impact.\n\n"
       "This value must be equal to or less than the projectile's lifetime.\n\n"
       "@see lifetime");

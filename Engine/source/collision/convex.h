@@ -83,6 +83,7 @@ enum ConvexType {
    TSConvexType,
    BoxConvexType,
    TerrainConvexType,
+   InteriorConvexType,
    ShapeBaseConvexType,
    TSStaticConvexType,
    AtlasChunkConvexType, ///< @deprecated

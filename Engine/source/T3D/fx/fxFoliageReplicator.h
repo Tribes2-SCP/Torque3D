@@ -47,10 +47,12 @@
 #define AREA_ANIMATION_ARC         (1.0f / 360.0f)
 
 #define FXFOLIAGEREPLICATOR_COLLISION_MASK   (   TerrainObjectType     |   \
+                                                 InteriorObjectType    |   \
                                                  StaticShapeObjectType |   \
                                                  WaterObjectType      )
 
 #define FXFOLIAGEREPLICATOR_NOWATER_COLLISION_MASK   (   TerrainObjectType      |   \
+                                          InteriorObjectType      |   \
                                           StaticShapeObjectType   )
 
 
@@ -309,6 +311,7 @@ public:
       F32               mLightTime;
 
       bool            mAllowOnTerrain;
+      bool            mAllowOnInteriors;
       bool            mAllowStatics;
       bool            mAllowOnWater;
       bool            mAllowWaterSurface;
@@ -368,6 +371,7 @@ public:
          mLightTime            = 5.0f;
 
          mAllowOnTerrain       = true;
+         mAllowOnInteriors     = true;
          mAllowStatics         = true;
          mAllowOnWater         = false;
          mAllowWaterSurface    = false;

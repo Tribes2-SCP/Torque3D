@@ -300,7 +300,7 @@ function MaterialEditorGui::prepareActiveObject( %this, %override )
    if( MaterialEditorGui.currentObject == %obj && !%override)
       return;
    
-   // TSStatics and ShapeBase objects should have getModelFile methods
+   // TSStatics, ShapeBase, and Interiors should have getModelFile methods
    if( %obj.isMethod( "getModelFile" ) )
    {
       MaterialEditorGui.currentObject = %obj;
@@ -310,11 +310,30 @@ function MaterialEditorGui::prepareActiveObject( %this, %override )
       
       MaterialEditorGui.setMode();
       
-      for(%j = 0; %j < MaterialEditorGui.currentObject.getTargetCount(); %j++)
+      if( MaterialEditorGui.currentObject.isMethod( "getNumDetailLevels" ) ) // Interiors
       {
-         %target = MaterialEditorGui.currentObject.getTargetName(%j);
-         %count = SubMaterialSelector.getCount();
-         SubMaterialSelector.add(%target);
+         for(%j = 0; %j < MaterialEditorGui.currentObject.getNumDetailLevels(); %j++)
+         {  
+            %target = "Detail Level " @ %j;
+            %count = SubMaterialSelector.getCount();
+            SubMaterialSelector.addCategory(%target);
+               
+            for(%k = 0; %k < MaterialEditorGui.currentObject.getTargetCount(%j); %k++)
+            {
+               %target = MaterialEditorGui.currentObject.getTargetName(%j, %k);
+               %count = SubMaterialSelector.getCount();
+               SubMaterialSelector.add(%target);
+            }
+         }
+      }
+      else // TSStatic and ShapeBase
+      {
+         for(%j = 0; %j < MaterialEditorGui.currentObject.getTargetCount(); %j++)
+         {
+            %target = MaterialEditorGui.currentObject.getTargetName(%j);
+            %count = SubMaterialSelector.getCount();
+            SubMaterialSelector.add(%target);
+         }
       }
    }
    else // Other classes that support materials if possible
@@ -504,7 +523,9 @@ function MaterialEditorGui::setMaterialDirty(%this)
       {
          %obj = MaterialEditorGui.currentObject;
          
-         if( %obj.shapeName !$= "" ) 
+         if( %obj.interiorFile !$= "" )
+            %shapePath = %obj.interiorFile;
+         else if( %obj.shapeName !$= "" ) 
             %shapePath = %obj.shapeName;
          else if( %obj.isMethod("getDatablock") )
          {

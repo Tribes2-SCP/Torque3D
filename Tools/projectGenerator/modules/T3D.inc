@@ -23,6 +23,7 @@
 
 // 3D
 addEngineSrcDir('collision');
+addEngineSrcDir('interior');
 addEngineSrcDir('materials');
 addEngineSrcDir('lighting');
 addEngineSrcDir('lighting/common');

@@ -27,7 +27,7 @@ if(UNIX)
         set(CXX_FLAG32 "")
     endif()
     #set(CXX_FLAG32 "-m32") #uncomment for build x32 on OSx64
-    
+
     # default compiler flags
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAG32} -Wundef -msse -pipe -Wfatal-errors ${TORQUE_ADDITIONAL_LINKER_FLAGS} -Wl,-rpath,'$$ORIGIN'")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CXX_FLAG32} -Wundef -msse -pipe -Wfatal-errors ${TORQUE_ADDITIONAL_LINKER_FLAGS} -Wl,-rpath,'$$ORIGIN'")
@@ -89,7 +89,7 @@ endif()
 if(NOT MSVC) # handle single-configuration generator
     set(TORQUE_BUILD_TYPE "Debug" CACHE STRING "Select one of Debug, Release and RelWithDebInfo")
     set_property(CACHE TORQUE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
-    
+
     set(TORQUE_ADDITIONAL_LINKER_FLAGS "" CACHE STRING "Additional linker flags")
     mark_as_advanced(TORQUE_ADDITIONAL_LINKER_FLAGS)
 endif()
@@ -254,7 +254,9 @@ addPath("${srcDir}/T3D/decal")
 addPath("${srcDir}/T3D/sfx")
 addPath("${srcDir}/T3D/gameBase")
 addPath("${srcDir}/T3D/turret")
+addPath("${srcDir}/interior/")
 addPath("${srcDir}/main/")
+addPathRec("${srcDir}/ts/loader")
 addPathRec("${srcDir}/ts/collada")
 addPathRec("${srcDir}/ts/loader")
 addPathRec("${projectSrcDir}")
@@ -298,7 +300,7 @@ if(TORQUE_SFX_OPENAL AND NOT TORQUE_DEDICATED)
 	if(UNIX)
 		addPath("${srcDir}/sfx/openal/linux")
 	endif()
-    
+
 endif()
 
 # Vorbis
@@ -314,7 +316,7 @@ if(TORQUE_THEORA)
     addPath("${srcDir}/core/ogg")
     addPath("${srcDir}/gfx/video")
     addPath("${srcDir}/gui/theora")
-    
+
     addDef(TORQUE_OGGTHEORA)
     addDef(TORQUE_OGGVORIBS)
     addInclude(${libDir}/libtheora/include)
@@ -334,7 +336,7 @@ if(TORQUE_HIFI)
     addPath("${srcDir}/T3D/gameBase/hifi")
     addDef(TORQUE_HIFI_NET)
 endif()
-    
+
 if(TORQUE_EXTENDED_MOVE)
     addPath("${srcDir}/T3D/gameBase/extended")
     addDef(TORQUE_EXTENDED_MOVE)
@@ -345,11 +347,11 @@ endif()
 if(TORQUE_SDL)
     addPathRec("${srcDir}/windowManager/sdl")
     addPathRec("${srcDir}/platformSDL")
-    
+
     if(TORQUE_OPENGL)
       addPathRec("${srcDir}/gfx/gl/sdl")
     endif()
-    
+
     if(UNIX)
        #set(CMAKE_SIZEOF_VOID_P 4) #force 32 bit
        set(ENV{CFLAGS} "${CXX_FLAG32} -g -O3")
@@ -359,7 +361,7 @@ if(TORQUE_SDL)
          set(ENV{LDFLAGS} "${CXX_FLAG32} ${TORQUE_ADDITIONAL_LINKER_FLAGS}")
        endif()
     endif()
-    
+
     #override and hide SDL2 cache variables
     set(SDL_SHARED ON CACHE INTERNAL "" FORCE)
     set(SDL_STATIC OFF CACHE INTERNAL "" FORCE)
@@ -391,7 +393,7 @@ if(WIN32)
     addPath("${srcDir}/gfx/D3D")
     addPath("${srcDir}/gfx/D3D9")
     addPath("${srcDir}/gfx/D3D9/pc")
-    addPath("${srcDir}/shaderGen/HLSL")    
+    addPath("${srcDir}/shaderGen/HLSL")
     addPath("${srcDir}/terrain/hlsl")
     addPath("${srcDir}/forest/hlsl")
     # add windows rc file for the icon
@@ -409,7 +411,7 @@ if(APPLE)
     addPath("${srcDir}/gfx/gl/ggl/generated")
     addPath("${srcDir}/shaderGen/GLSL")
     addPath("${srcDir}/terrain/glsl")
-    addPath("${srcDir}/forest/glsl")    
+    addPath("${srcDir}/forest/glsl")
 endif()
 
 if(XBOX360)
@@ -436,14 +438,14 @@ if(PS3)
     addPath("${srcDir}/shaderGen/GLSL")
     addPath("${srcDir}/ts/arch/ps3")
     addPath("${srcDir}/terrain/glsl")
-    addPath("${srcDir}/forest/glsl")    
+    addPath("${srcDir}/forest/glsl")
 endif()
 
 if(UNIX)
     # linux_dedicated
     if(TORQUE_DEDICATED)
 		addPath("${srcDir}/windowManager/dedicated")
-		# ${srcDir}/platformX86UNIX/*.client.* files are not needed	
+		# ${srcDir}/platformX86UNIX/*.client.* files are not needed
 		# @todo: move to separate file
 		file( GLOB tmp_files
              ${srcDir}/platformX86UNIX/*.cpp
@@ -458,7 +460,7 @@ if(UNIX)
     else()
         addPath("${srcDir}/platformX86UNIX")
         addPath("${srcDir}/platformX86UNIX/nativeDialogs")
-    endif()    
+    endif()
     # linux
     addPath("${srcDir}/platformX86UNIX/threads")
     addPath("${srcDir}/platformPOSIX")
@@ -468,15 +470,15 @@ if( TORQUE_OPENGL )
     addPath("${srcDir}/shaderGen/GLSL")
     if( TORQUE_OPENGL AND NOT TORQUE_DEDICATED )
         addPath("${srcDir}/gfx/gl")
-        addPath("${srcDir}/gfx/gl/tGL")        
+        addPath("${srcDir}/gfx/gl/tGL")
     addPath("${srcDir}/shaderGen/GLSL")
         addPath("${srcDir}/terrain/glsl")
-        addPath("${srcDir}/forest/glsl")    
+        addPath("${srcDir}/forest/glsl")
 
     # glew
     LIST(APPEND ${PROJECT_NAME}_files "${libDir}/glew/src/glew.c")
     endif()
-    
+
     if(WIN32 AND NOT TORQUE_SDL)
       addPath("${srcDir}/gfx/gl/win32")
     endif()
@@ -533,7 +535,7 @@ if(WIN32)
     set(TORQUE_EXTERNAL_LIBS "COMCTL32.LIB;COMDLG32.LIB;USER32.LIB;ADVAPI32.LIB;GDI32.LIB;WINMM.LIB;WSOCK32.LIB;vfw32.lib;Imm32.lib;d3d9.lib;d3dx9.lib;DxErr.lib;ole32.lib;shell32.lib;oleaut32.lib;version.lib" CACHE STRING "external libs to link against")
     mark_as_advanced(TORQUE_EXTERNAL_LIBS)
     addLib("${TORQUE_EXTERNAL_LIBS}")
-   
+
    if(TORQUE_OPENGL)
       addLib(OpenGL32.lib)
    endif()
@@ -543,7 +545,7 @@ if(UNIX)
     # copy pasted from T3D build system, some might not be needed
 	set(TORQUE_EXTERNAL_LIBS "dl Xxf86vm Xext X11 Xft stdc++ pthread GL" CACHE STRING "external libs to link against")
 	mark_as_advanced(TORQUE_EXTERNAL_LIBS)
-    
+
     string(REPLACE " " ";" TORQUE_EXTERNAL_LIBS_LIST ${TORQUE_EXTERNAL_LIBS})
     addLib( "${TORQUE_EXTERNAL_LIBS_LIST}" )
 endif()
@@ -552,7 +554,7 @@ if(UNIX)
     # copy pasted from T3D build system, some might not be needed
 	set(TORQUE_EXTERNAL_LIBS "rt dl Xxf86vm Xext X11 Xft stdc++ pthread GL" CACHE STRING "external libs to link against")
 	mark_as_advanced(TORQUE_EXTERNAL_LIBS)
-    
+
     string(REPLACE " " ";" TORQUE_EXTERNAL_LIBS_LIST ${TORQUE_EXTERNAL_LIBS})
     addLib( "${TORQUE_EXTERNAL_LIBS_LIST}" )
 endif()
@@ -581,7 +583,7 @@ addDef(_CRT_SECURE_NO_WARNINGS)
 addDef(_CRT_SECURE_NO_DEPRECATE)
 
 if(UNIX)
-	addDef(LINUX)	
+	addDef(LINUX)
 endif()
 
 if(TORQUE_OPENGL)

@@ -358,7 +358,7 @@ U32 AIClient::getMoveList( Move **movePtr,U32 *numMoves ) {
    Point3F targetLoc = mMoveDestination; // Change this
 
    if( mPlayer ) {
-      if( !mPlayer->getContainer()->castRay( mLocation, targetLoc, 
+      if( !mPlayer->getContainer()->castRay( mLocation, targetLoc, InteriorObjectType |
                                                 StaticShapeObjectType | StaticObjectType |
                                                 TerrainObjectType, &dummy ) ) {
          if( !mTargetInLOS )

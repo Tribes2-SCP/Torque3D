@@ -74,7 +74,7 @@ function movebackward(%val)
 function moveup(%val)
 {
    %object = ServerConnection.getControlObject();
-   
+
    if(%object.isInNamespaceHierarchy("Camera"))
       $mvUpAction = %val * $movementSpeed;
 }
@@ -82,7 +82,7 @@ function moveup(%val)
 function movedown(%val)
 {
    %object = ServerConnection.getControlObject();
-   
+
    if(%object.isInNamespaceHierarchy("Camera"))
       $mvDownAction = %val * $movementSpeed;
 }
@@ -441,6 +441,7 @@ GlobalActionMap.bind(keyboard, "ctrl o", bringUpOptions);
 //------------------------------------------------------------------------------
 // Debugging Functions
 //------------------------------------------------------------------------------
+<<<<<<< HEAD
 function showMetrics(%val)
 {
    if(%val)

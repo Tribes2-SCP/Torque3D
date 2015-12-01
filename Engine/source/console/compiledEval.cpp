@@ -45,9 +45,41 @@
 #include "materials/materialManager.h"
 #endif
 
+#include <string>
+#include <regex>
+std::string classBefore[100] = {"AudioProfile","LinearProjectile","GrenadeProjectile","","","","",""};
+std::string classAfter[100]  = {"SFXProfile","Projectile","Projectile","","","","",""};
+std::string dataBlockBefore[100] = {"AudioProfile","LinearProjectileData","GrenadeProjectileData","","","","",""};
+std::string dataBlockAfter[100]  = {"SFXProfile","ProjectileData","ProjectileData","","","","",""};
 // Uncomment to optimize function calls at the expense of potential invalid package lookups
 //#define COMPILER_OPTIMIZE_FUNCTION_CALLS
-
+void find_and_replace(std::string& source, std::string const& find, std::string const& replace)
+{
+	using namespace std;
+    for(std::string::size_type i = 0; (i = source.find(find, i)) != std::string::npos;)
+    {
+        source.replace(i, find.length(), replace);
+        i += replace.length();
+    }
+}
+char * replaceClass(const char *instr) {
+	std::string outstr=std::string(instr);
+	for(int x=0;x<100;x++) {
+		if ((classAfter[x].c_str()[0]=='\x00') || (classAfter[x].c_str()[0]=='\x00'))
+			break;
+		find_and_replace(outstr,classBefore[x],classAfter[x]);
+	}
+	return strdup(outstr.c_str());
+}
+char * replaceDataBlock(const char *instr) {
+	std::string outstr=std::string(instr);
+	for(int x=0;x<100;x++) {
+		if ((dataBlockAfter[x].c_str()[0]=='\x00') || (dataBlockAfter[x].c_str()[0]=='\x00'))
+			break;
+		find_and_replace(outstr,dataBlockBefore[x],dataBlockAfter[x]);
+	}
+	return strdup(outstr.c_str());
+}
 using namespace Compiler;
 
 enum EvalConstants {
@@ -827,6 +859,8 @@ breakContinue:
             if(!currentNewObject)
             {
                // Well, looks like we have to create a new object.
+			   if(!isDataBlock)
+				   callArgv[1]=replaceClass(callArgv[1]);
                ConsoleObject *object = ConsoleObject::create((const char*)callArgv[1]);
 
                // Deal with failure!
@@ -847,6 +881,7 @@ breakContinue:
                   }
                   else
                   {
+					 
                      // They tried to make a non-datablock with a datablock keyword!
                      Con::errorf(ConsoleLogEntry::General, "%s: Unable to instantiate non-datablock class %s.", getFileLine(ip), (const char*)callArgv[1]);
                      // Clean up...

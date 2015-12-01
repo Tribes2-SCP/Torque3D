@@ -53,21 +53,25 @@ enum SceneObjectTypes
    /// @see TerrainBlock
    TerrainObjectType = BIT( 2 ),
 
+   /// A legacy DIF interior object.
+   /// @see InteriorInstance
+   InteriorObjectType = BIT( 3 ),
+
    /// An object defining a water volume.
    /// @see WaterObject
-   WaterObjectType = BIT( 3 ),
+   WaterObjectType = BIT( 4 ),
 
    /// An object defining an invisible trigger volume.
    /// @see Trigger
-   TriggerObjectType = BIT( 4 ),
+   TriggerObjectType = BIT( 5 ),
 
    /// An object defining an invisible marker.
    /// @see MissionMarker
-   MarkerObjectType = BIT( 5 ),
+   MarkerObjectType = BIT( 6 ),
 
    /// A light emitter.
    /// @see LightBase
-   LightObjectType = BIT( 6 ),
+   LightObjectType = BIT( 7 ),
 
    /// An object that manages zones.  This is automatically set by
    /// SceneZoneSpaceManager when a SceneZoneSpace registers zones.  Should
@@ -75,7 +79,7 @@ enum SceneObjectTypes
    ///
    /// @see SceneZoneSpace
    /// @see SceneZoneSpaceManager
-   ZoneObjectType = BIT( 7 ),
+   ZoneObjectType = BIT( 8 ),
 
    /// Any object that defines one or more solid, renderable static geometries that
    /// should be included in collision and raycasts.
@@ -83,13 +87,13 @@ enum SceneObjectTypes
    /// Use this mask to find objects that are part of the static level geometry.
    ///
    /// @note If you set this, you will also want to set StaticObjectType.
-   StaticShapeObjectType = BIT( 8 ),
+   StaticShapeObjectType = BIT( 9 ),
 
    /// Any object that defines one or more solid, renderable dynamic geometries that
    /// should be included in collision and raycasts.
    ///
    /// Use this mask to find objects that are part of the dynamic game geometry.
-   DynamicShapeObjectType = BIT( 9 ),
+   DynamicShapeObjectType = BIT( 10 ),
 
    /// @}
 
@@ -98,54 +102,54 @@ enum SceneObjectTypes
 
    /// Any GameBase-derived object.
    /// @see GameBase
-   GameBaseObjectType = BIT( 10 ),
+   GameBaseObjectType = BIT( 11 ),
 
    /// An object that uses hifi networking.
-   GameBaseHiFiObjectType = BIT( 11 ),
+   GameBaseHiFiObjectType = BIT( 12 ),
 
    /// Any ShapeBase-derived object.
    /// @see ShapeBase
-   ShapeBaseObjectType = BIT( 12 ),
+   ShapeBaseObjectType = BIT( 13 ),
 
    /// A camera object.
    /// @see Camera
-   CameraObjectType = BIT( 13 ),
+   CameraObjectType = BIT( 14 ),
 
    /// A human or AI player object.
    /// @see Player
-   PlayerObjectType = BIT( 14 ),
+   PlayerObjectType = BIT( 15 ),
 
    /// An item pickup.
    /// @see Item
-   ItemObjectType = BIT( 15 ),
+   ItemObjectType = BIT( 16 ),
 
    /// A vehicle.
    /// @see Vehicle
-   VehicleObjectType = BIT( 16 ),
+   VehicleObjectType = BIT( 17 ),
 
    /// An object that blocks vehicles.
    /// @see VehicleBlocker
-   VehicleBlockerObjectType = BIT( 17 ),
+   VehicleBlockerObjectType = BIT( 18 ),
 
    /// A weapon projectile.
    /// @see Projectile
-   ProjectileObjectType = BIT( 18 ),
+   ProjectileObjectType = BIT( 19 ),
 
    /// An explosion object.
    /// @see Explosion
-   ExplosionObjectType = BIT( 19 ),
+   ExplosionObjectType = BIT( 20 ),
 
    /// A dead player.  This is dynamically set and unset.
    /// @see Player
-   CorpseObjectType = BIT( 20 ),
+   CorpseObjectType = BIT( 21 ),
 
    /// A debris object.
    /// @see Debris
-   DebrisObjectType = BIT( 21 ),
+   DebrisObjectType = BIT( 22 ),
 
    /// A volume that asserts forces on player objects.
    /// @see PhysicalZone
-   PhysicalZoneObjectType = BIT( 22 ),
+   PhysicalZoneObjectType = BIT( 23 ),
 
    /// @}
 };
@@ -169,7 +173,8 @@ enum SceneObjectTypeMasks
    ///
    /// Also, objects that do their own culling internally (terrains, forests, etc.)
    /// should be excluded.
-   CULLING_INCLUDE_TYPEMASK = (  GameBaseObjectType | // Includes most other renderable types; but broader than we ideally want.
+   CULLING_INCLUDE_TYPEMASK = (  InteriorObjectType |
+                                 GameBaseObjectType | // Includes most other renderable types; but broader than we ideally want.
                                  StaticShapeObjectType |
                                  DynamicShapeObjectType |
                                  ZoneObjectType ), // This improves the result of zone traversals.
@@ -195,6 +200,7 @@ enum SceneObjectTypeMasks
    ///
    /// @note Terrains have their own means for rendering inside interior zones.
    OUTDOOR_OBJECT_TYPEMASK = (   TerrainObjectType |
+                                 InteriorObjectType |
                                  EnvironmentObjectType )
 };
 

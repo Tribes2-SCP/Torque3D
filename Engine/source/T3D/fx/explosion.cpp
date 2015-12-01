@@ -617,7 +617,7 @@ void ExplosionData::packData(BitStream* stream)
    stream->writeRangedU32(count, 0, EC_NUM_TIME_KEYS);
 
    for( i=0; i<count; i++ )
-      stream->writeFloat( times[i], 8 );
+      stream->writeFloat( times[i], 32 );
 
    for( i=0; i<count; i++ )
    {
@@ -721,7 +721,7 @@ void ExplosionData::unpackData(BitStream* stream)
    U32 count = stream->readRangedU32(0, EC_NUM_TIME_KEYS);
 
    for( i=0; i<count; i++ )
-      times[i] = stream->readFloat(8);
+      times[i] = stream->readFloat(32);
 
    for( i=0; i<count; i++ )
    {

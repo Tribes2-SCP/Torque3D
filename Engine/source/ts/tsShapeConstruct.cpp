@@ -142,6 +142,7 @@ bool TSShapeConstructor::addSequenceFromField( void *obj, const char *index, con
    TSShapeConstructor *pObj = static_cast<TSShapeConstructor*>( obj );
 
    if ( data && data[0] )
+	  Con::errorf("addSeq %s\n",data);
       pObj->mSequences.push_back( FileName(data) );
 
    return false;
@@ -404,6 +405,7 @@ void TSShapeConstructor::_onLoad(TSShape* shape)
       // Split the sequence path from the target sequence name
       String destName;
       String srcPath( mSequences[i] );
+	  Con::errorf("src: %s dst:%s\n",srcPath.c_str(),destName.c_str());
       SplitSequencePathAndName( srcPath, destName );
 
       addSequence( srcPath, destName );

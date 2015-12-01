@@ -160,6 +160,7 @@ struct PlayerData: public ShapeBaseData {
    F32 jetEnergyDrain;
    F32 minJetEnergy;
    F32 maxJetHorizontalPercentage;
+   F32 maxJetForwardSpeed;
 
    F32 maxJetForwardSpeed;
 

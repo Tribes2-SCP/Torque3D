@@ -36,10 +36,12 @@
 #define AREA_ANIMATION_ARC         (1.0f / 360.0f)
 
 #define FXREPLICATOR_COLLISION_MASK   (   TerrainObjectType      |   \
+                              InteriorObjectType      |   \
                               StaticShapeObjectType      |   \
                               WaterObjectType      )
 
 #define FXREPLICATOR_NOWATER_COLLISION_MASK   (   TerrainObjectType      |   \
+                                    InteriorObjectType      |   \
                                     StaticShapeObjectType      )
 
 
@@ -137,6 +139,7 @@ public:
       U32                mOuterRadiusY;
       S32                mOffsetZ;
       bool              mAllowOnTerrain;
+      bool              mAllowOnInteriors;
       bool              mAllowStatics;
       bool              mAllowOnWater;
       S32               mAllowedTerrainSlope;
@@ -163,6 +166,7 @@ public:
          mOffsetZ            = 0;
 
          mAllowOnTerrain     = true;
+         mAllowOnInteriors   = true;
          mAllowStatics       = true;
          mAllowOnWater       = false;
          mAllowWaterSurface  = false;

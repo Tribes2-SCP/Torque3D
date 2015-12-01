@@ -706,7 +706,12 @@ FileNodeRef MountSystem::getFileNode(const Path& path)
        String newpathstr(newpathca);
        Path newpath=path;
        newpath.setPath(newpathstr);
-       //Con::errorf("Path: %s/%s",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
+	   FILE * filelog=NULL;
+	   filelog=fopen("filelog.log","a+");
+	   if (filelog) {
+		   fprintf(filelog,"Path: %s/%s\n",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
+		   fclose(filelog);
+	   }
        Path np = _normalize(newpath);
        FileSystemRef fs = _getFileSystemFromList(np);
        if (fs != NULL){
