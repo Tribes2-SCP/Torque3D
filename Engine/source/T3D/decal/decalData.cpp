@@ -143,7 +143,8 @@ void DecalData::initPersistFields()
 
       addField( "size", TypeF32, Offset( size, DecalData ), 
          "Width and height of the decal in meters before scale is applied." );
-
+      addField( "sizeX", TypeF32, Offset( size, DecalData ), 
+         "Width and height of the decal in meters before scale is applied." );
       addField( "material", TypeMaterialName, Offset( materialName, DecalData ),
          "Material to use for this decal." );
 

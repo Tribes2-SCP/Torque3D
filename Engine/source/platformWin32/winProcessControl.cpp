@@ -32,7 +32,7 @@ void Platform::postQuitMessage(const S32 in_quitVal)
 
 void Platform::debugBreak()
 {
-    DebugBreak();
+    //DebugBreak();
 }
 
 void Platform::forceShutdown(S32 returnValue)

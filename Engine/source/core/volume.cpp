@@ -707,7 +707,7 @@ FileNodeRef MountSystem::getFileNode(const Path& path)
        Path newpath=path;
        newpath.setPath(newpathstr);
 	   FILE * filelog=NULL;
-	   filelog=fopen("filelog.log","a+");
+	   //filelog=fopen("filelog.log","a+");
 	   if (filelog) {
 		   fprintf(filelog,"Path: %s/%s\n",newpath.getPath().c_str(),newpath.getFullFileName().c_str());
 		   fclose(filelog);
