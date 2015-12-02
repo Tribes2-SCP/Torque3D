@@ -34,10 +34,10 @@ extern "C"
 
 bool getDllName(std::wstring& dllName, const std::wstring& suffix)
 {
-   wchar_t filenameBuf[MAX_PATH];
-   DWORD length = GetModuleFileNameW( NULL, filenameBuf, MAX_PATH );
-   if(length == 0) return false;
-   dllName = std::wstring(filenameBuf);
+            wchar_t filenameBuf[MAX_PATH];
+            DWORD length = GetModuleFileNameW( NULL, filenameBuf, MAX_PATH );
+            if(length == 0) return false;
+            dllName = std::wstring(filenameBuf);
    size_t dotPos = dllName.find_last_of(L".");
    if(dotPos == std::wstring::npos)
    {
